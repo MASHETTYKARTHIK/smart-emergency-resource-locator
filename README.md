@@ -1,4 +1,5 @@
 # Smart Emergency Resource Locator
+OUR DEPLOYED APP LINK:https://smart-emergency-resource-locator-hlfeste2xaj4ycurgwdjry.streamlit.app/
 
 ## Overview
 
