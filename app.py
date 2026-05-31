@@ -1,5 +1,12 @@
 import streamlit as st
 import pandas as pd
+
+st.set_page_config(
+    page_title="Smart Emergency Resource Locator",
+    page_icon="🚑",
+    layout="wide"
+)
+
 st.markdown("""
 <style>
 
@@ -31,12 +38,6 @@ div[data-testid="metric-container"] {
 
 </style>
 """, unsafe_allow_html=True)
-
-st.set_page_config(
-    page_title="Smart Emergency Resource Locator",
-    page_icon="🚑",
-    layout="wide"
-)
 
 st.title("🚑 Smart Emergency Resource Locator")
 
