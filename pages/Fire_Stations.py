@@ -1,0 +1,9 @@
+Name,Area,Contact,Latitude,Longitude
+Gachibowli Fire Station,Gachibowli,101,17.4401,78.3489
+Kukatpally Fire Station,Kukatpally,101,17.4948,78.3996
+Madhapur Fire Station,Madhapur,101,17.4483,78.3915
+Ameerpet Fire Station,Ameerpet,101,17.4374,78.4482
+Banjara Hills Fire Station,Banjara Hills,101,17.4120,78.4340
+Jubilee Hills Fire Station,Jubilee Hills,101,17.4320,78.4070
+Begumpet Fire Station,Begumpet,101,17.4440,78.4660
+Secunderabad Fire Station,Secunderabad,101,17.4399,78.4983

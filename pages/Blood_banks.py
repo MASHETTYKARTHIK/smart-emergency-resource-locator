@@ -1,0 +1,11 @@
+Name,Area,Contact,Latitude,Longitude
+Red Cross Blood Bank,Secunderabad,040555111,17.4399,78.4983
+Gandhi Blood Bank,Secunderabad,040555222,17.4450,78.4950
+NIMS Blood Bank,Panjagutta,040555333,17.4260,78.4510
+Yashoda Blood Bank,Somajiguda,040555444,17.4235,78.4560
+Apollo Blood Bank,Jubilee Hills,040555555,17.4320,78.4070
+Care Blood Bank,Banjara Hills,040555666,17.4120,78.4340
+KIMS Blood Bank,Ameerpet,040555777,17.4374,78.4482
+Rainbow Blood Bank,Banjara Hills,040555888,17.4150,78.4380
+Global Blood Bank,Lakdikapul,040555999,17.4050,78.4610
+Medicover Blood Bank,Hitech City,040555000,17.4500,78.3810
