@@ -9,53 +9,60 @@ stages:
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PYTHONPATH: "."
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
 
 cache:
+  key: "$CI_COMMIT_REF_SLUG"
   paths:
     - .cache/pip
     - venv/
-
 
 before_script:
   - python --version
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
+  - pip install --upgrade pip
   - pip install -r requirements.txt
-  - pip install ruff mypy bandit pip-audit pytest pytest-cov
 
-# Linting Stage
-ruff-format:
+# --- LINT STAGE ---
+ruff-check:
   stage: lint
   script:
     - ruff format --check .
     - ruff check .
 
-# Type Checking Stage
+# --- TYPE CHECK STAGE ---
 mypy-check:
   stage: type_check
   script:
-    - mypy . --ignore-missing-imports
+    - mypy .
 
-# Security Stage
+# --- SECURITY STAGE ---
 security-bandit:
   stage: security
   script:
-    - bandit -r . -ll
+    - bandit -r . -ll --config pyproject.toml
 
 security-semgrep:
   stage: security
   image: returntocorp/semgrep
+  variables:
+    SEMGREP_AGENT_TOKEN: $SEMGREP_AGENT_TOKEN
   before_script: []
   script:
-    - semgrep --config auto
+    - semgrep ci --config auto
 
 dependency-audit:
   stage: security
   script:
+    # Use || true to prevent job failure if vulnerabilities are found, 
+    # as we handle fixes in requirements.txt. Or remove || true to enforce strictness.
     - pip-audit
 
-# Testing & Coverage Stage
+# --- TEST STAGE ---
 test-coverage:
   stage: test
   script:
@@ -66,17 +73,20 @@ test-coverage:
         coverage_format: cobertura
         path: coverage.xml
 
-# Changelog Generation (Deploy/Release stage)
+# --- DEPLOY STAGE ---
 changelog:
   stage: deploy
   image:
     name: orhunp/git-cliff:latest
     entrypoint: [""]
-  before_script: []
+  before_script:
+    - apk add --no-cache git || true
   script:
+    - git fetch --unshallow || true
     - git-cliff --output CHANGELOG.md
   artifacts:
     paths:
       - CHANGELOG.md
   only:
     - main
+    - pipelineerrorfixing
