@@ -1,0 +1,21 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "--cov=. --cov-report=term-missing --cov-report=xml"
+
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "venv/*",
+    ".*"
+]
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "B", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
