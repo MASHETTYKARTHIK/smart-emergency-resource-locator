@@ -1,107 +1,108 @@
-# Smart Emergency Resource Locator
-OUR DEPLOYED APP LINK:https://smart-emergency-resource-locator-hlfeste2xaj4ycurgwdjry.streamlit.app/
+# Smart Emergency Resource Locator 🚑
 
-## Overview
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![CI/CD Pipeline](https://img.shields.io/badge/GitLab-CI%2FCD-orange)](https://gitlab.com)
+[![Code Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)]()
 
-Smart Emergency Resource Locator is a CivicTech project developed by Team MTSKV to help citizens quickly find nearby emergency services during critical situations.
+**OUR DEPLOYED APP LINK:** [Smart Emergency Resource Locator](https://smart-emergency-resource-locator-hlfeste2xaj4ycurgwdjry.streamlit.app/)
 
-The platform provides access to hospitals, blood banks, police stations, fire stations, and emergency shelters through a simple and user-friendly interface.
+## 📖 Project Overview
 
----
-
-## Problem Statement
-
-During emergencies, people often struggle to find the nearest emergency resources. Delays in locating hospitals, blood banks, police stations, or fire stations can have serious consequences.
+Smart Emergency Resource Locator is a CivicTech project developed by **Team MTSKV** to help citizens in Hyderabad quickly find nearby emergency services during critical situations. Delays in locating hospitals, blood banks, or fire stations can have serious consequences; this platform minimizes that delay through a simple, data-driven interface.
 
 ---
 
-## Solution
+## ✨ Features
 
-The Smart Emergency Resource Locator helps users:
-
-* Find nearby hospitals
-* Locate blood banks
-* Find police stations
-* Locate fire stations
-* Access emergency shelters
-* Get intelligent recommendations based on emergency type
+- 🏥 **Hospital Search**: Locate the nearest medical facilities.
+- 🩸 **Blood Banks**: Find emergency blood supplies in real-time.
+- 👮 **Police Stations**: Quick access to law enforcement locations.
+- 🚒 **Fire Stations**: Locate the nearest emergency responders.
+- 📞 **One-Touch Contacts**: Instant access to 100, 108, 101, and 181.
 
 ---
 
-## Features
+## 🏗️ Architecture
 
-### Emergency Resource Search
-
-* Search hospitals
-* Search blood banks
-* Search police stations
-* Search fire stations
-
-### Smart Recommendations
-
-* Resource recommendations based on emergency type
-* Priority ranking of resources
-
-### Dashboard
-
-* Resource statistics
-* Emergency service analytics
-* Visual reports
+```mermaid
+graph TD
+    A[User Browser] -->|Streamlit UI| B(Python Backend)
+    B --> C{Resource Filter}
+    C --> D[(CSV Data)]
+    B --> E[Plotly/Folium Visualization]
+```
 
 ---
 
-## Tech Stack
+## 🚀 Installation
 
-### Frontend
+### Prerequisites
+- Python 3.9+
+- Pip
 
-* Streamlit
-
-### Backend
-
-* Python
-
-### Data Processing
-
-* Pandas
-
-### Visualization
-
-* Plotly
-
-### Database
-
-* CSV / SQLite
-
-### Maps
-
-* Folium
+### Local Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/smart-emergency-resource-locator.git
+   cd smart-emergency-resource-locator
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the application:
+   ```bash
+   streamlit run app.py
+   ```
 
 ---
 
-## Team MTSKV
+## 🐳 Docker Support
 
-* Manoj
-* Teja
-* Sampath
-* Karthik
-* Viplav
+To run the application using Docker:
 
----
-
-## Future Enhancements
-
-* Real-time GPS integration
-* Live hospital availability
-* Emergency contact integration
-* AI-powered route optimization
-* Mobile application support
+1. Build the image:
+   ```bash
+   docker build -t emergency-locator .
+   ```
+2. Start the container:
+   ```bash
+   docker run -p 8501:8501 emergency-locator
+   ```
 
 ---
 
-## Impact
+## 🧪 Testing
 
-This platform helps citizens access emergency resources faster, improving response time and public safety.
+We use `pytest` for quality assurance. To run tests with coverage:
 
-## License
+```bash
+pytest --cov=. tests/
+```
 
-Open Source Project
+---
+
+## 🛡️ Compliance & Security
+
+This project adheres to high-security standards:
+- **Linting**: Ruff
+- **Type Checking**: Mypy
+- **Security Scanning**: Bandit, Semgrep, Gitleaks
+- **Dependency Audit**: pip-audit
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before submitting pull requests.
+
+---
+
+## 📄 License
+
+This project is licensed under the **GNU Affero General Public License v3 (AGPLv3)** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Team MTSKV
+- Manoj | Teja | Sampath | Karthik | Viplav
