@@ -6,11 +6,12 @@ st.set_page_config(
     page_title="Emergency Resource Locator | Team MTSKV",
     page_icon="🚑",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # --- PREMIUM CSS STYLING ---
-st.markdown("""
+st.markdown(
+    """
 <style>
     /* Global Styles */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -127,35 +128,40 @@ st.markdown("""
     }
 
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- SIDEBAR: MISSION CONTROL ---
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/1022/1022313.png", width=80)
     st.markdown("## Mission Control")
     st.info("Helping citizens find emergency resources in record time.")
-    
+
     st.divider()
-    
+
     st.markdown("### 📞 Emergency Hotline")
     st.error("🚓 **Police:** 100")
     st.error("🚑 **Ambulance:** 108")
     st.error("🚒 **Fire:** 101")
     st.warning("👩 **Women Helpline:** 181")
-    
+
     st.divider()
-    
+
     st.markdown("### 🏛️ About Team MTSKV")
     st.caption("A CivicTech initiative for a safer Hyderabad.")
     st.caption("Developed by: Manoj, Teja, Sampath, Karthik, Viplav")
 
 # --- MAIN CONTENT: HERO SECTION ---
-st.markdown("""
+st.markdown(
+    """
     <div class="hero-section">
         <div class="hero-title">🚑 Smart Emergency Locator</div>
         <div class="hero-subtitle">High-speed resource discovery for life-critical situations.</div>
     </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- DASHBOARD METRICS ---
 col1, col2, col3, col4 = st.columns(4)
@@ -169,21 +175,21 @@ st.markdown("<br>", unsafe_allow_html=True)
 # --- SEARCH PANEL ---
 with st.container():
     search_col1, search_col2, search_col3 = st.columns([2, 2, 1])
-    
+
     with search_col1:
         resource = st.selectbox(
             "What do you need?",
             ["Hospital", "Blood Bank", "Police Station", "Fire Station"],
-            index=0
+            index=0,
         )
-        
+
     with search_col2:
         location = st.selectbox(
             "Select Area",
             ["Gachibowli", "Madhapur", "Kukatpally", "Ameerpet", "Secunderabad"],
-            index=0
+            index=0,
         )
-        
+
     with search_col3:
         st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
         search_btn = st.button("Search Resources")
@@ -210,38 +216,47 @@ if search_btn:
 
     if not filtered.empty:
         st.markdown(f"### 📍 Found {len(filtered)} {resource}s in {location}")
-        
+
         # Rendering modern cards instead of plain table
         for index, row in filtered.iterrows():
-            st.markdown(f"""
+            st.markdown(
+                f"""
                 <div class="resource-card">
-                    <div class="resource-name">{icon} {row['Name']}</div>
+                    <div class="resource-name">{icon} {row["Name"]}</div>
                     <div class="resource-info">
-                        <span class="icon">📍</span> <b>Area:</b> {row['Area']}
+                        <span class="icon">📍</span> <b>Area:</b> {row["Area"]}
                     </div>
                     <div class="resource-info">
-                        <span class="icon">📞</span> <b>Contact:</b> {row['Contact']}
+                        <span class="icon">📞</span> <b>Contact:</b> {row["Contact"]}
                     </div>
                     <div class="resource-info">
-                        <span class="icon">🌐</span> <b>Coordinates:</b> {row['Latitude']}, {row['Longitude']}
+                        <span class="icon">🌐</span> <b>Coordinates:</b> {row["Latitude"]}, {row["Longitude"]}
                     </div>
                 </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
     else:
         st.warning(f"No {resource}s found in {location}. Try a nearby area.")
 else:
     # Initial state or "Ready" message
-    st.markdown("""
+    st.markdown(
+        """
         <div style="text-align: center; padding: 50px; color: #4A5568;">
             <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" width="100" style="opacity: 0.5;">
             <h3>Select a resource and location above to begin.</h3>
         </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 # --- FOOTER ---
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("""
+st.markdown(
+    """
     <div style="text-align: center; color: #4A5568; font-size: 0.8rem;">
         © 2026 Team MTSKV | Smart Emergency Resource Locator | Built with Streamlit
     </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)

@@ -27,56 +27,37 @@ with col4:
 
 st.divider()
 
-chart_data = pd.DataFrame({
-    "Resource": [
-        "Hospitals",
-        "Blood Banks",
-        "Police Stations",
-        "Fire Stations"
-    ],
-    "Count": [
-        len(hospitals),
-        len(bloodbanks),
-        len(police),
-        len(fire)
-    ]
-})
+chart_data = pd.DataFrame(
+    {
+        "Resource": ["Hospitals", "Blood Banks", "Police Stations", "Fire Stations"],
+        "Count": [len(hospitals), len(bloodbanks), len(police), len(fire)],
+    }
+)
 
 pie = px.pie(
     chart_data,
     names="Resource",
     values="Count",
-    title="Emergency Resources Distribution"
+    title="Emergency Resources Distribution",
 )
 
 st.plotly_chart(pie, use_container_width=True)
 
-bar = px.bar(
-    chart_data,
-    x="Resource",
-    y="Count",
-    title="Resource Count Comparison"
-)
+bar = px.bar(chart_data, x="Resource", y="Count", title="Resource Count Comparison")
 
 st.plotly_chart(bar, use_container_width=True)
 
 st.divider()
 
-all_data = pd.concat([
-    hospitals[["Area"]],
-    bloodbanks[["Area"]],
-    police[["Area"]],
-    fire[["Area"]]
-])
+all_data = pd.concat(
+    [hospitals[["Area"]], bloodbanks[["Area"]], police[["Area"]], fire[["Area"]]]
+)
 
 area_count = all_data["Area"].value_counts().reset_index()
 area_count.columns = ["Area", "Resources"]
 
 area_chart = px.bar(
-    area_count,
-    x="Area",
-    y="Resources",
-    title="Area-wise Resource Distribution"
+    area_count, x="Area", y="Resources", title="Area-wise Resource Distribution"
 )
 
 st.plotly_chart(area_chart, use_container_width=True)

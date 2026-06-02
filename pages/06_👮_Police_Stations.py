@@ -11,4 +11,6 @@ st.dataframe(df, use_container_width=True)
 
 st.metric("Total Police Stations", len(df))
 
-st.info("In case of emergency, call 100 immediately to reach the nearest police station.")
+st.info(
+    "In case of emergency, call 100 immediately to reach the nearest police station."
+)

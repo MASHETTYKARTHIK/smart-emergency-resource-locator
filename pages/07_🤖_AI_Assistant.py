@@ -7,12 +7,10 @@ st.title("🤖 AI Emergency Assistant")
 st.write("Describe your emergency and get the recommended service.")
 
 user_input = st.text_area(
-    "Enter Emergency Description",
-    placeholder="Example: Road accident near Gachibowli"
+    "Enter Emergency Description", placeholder="Example: Road accident near Gachibowli"
 )
 
 if st.button("Get Recommendation"):
-
     text = user_input.lower()
 
     if "accident" in text or "injury" in text:
@@ -32,6 +30,4 @@ if st.button("Get Recommendation"):
         st.info("Nearest Suggestion: Gachibowli Police Station")
 
     else:
-        st.warning(
-            "Unable to identify emergency type. Please provide more details."
-        )
+        st.warning("Unable to identify emergency type. Please provide more details.")

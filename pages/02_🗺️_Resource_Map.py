@@ -7,12 +7,7 @@ st.title("🗺️ Emergency Resource Map")
 
 resource = st.selectbox(
     "Select Resource Type",
-    [
-        "Hospitals",
-        "Blood Banks",
-        "Police Stations",
-        "Fire Stations"
-    ]
+    ["Hospitals", "Blood Banks", "Police Stations", "Fire Stations"],
 )
 
 if resource == "Hospitals":
@@ -31,22 +26,14 @@ else:
     df = pd.read_csv("data/firestations.csv")
     color = "orange"
 
-m = folium.Map(
-    location=[17.44, 78.38],
-    zoom_start=11
-)
+m = folium.Map(location=[17.44, 78.38], zoom_start=11)
 
 for _, row in df.iterrows():
-
     folium.Marker(
         [row["Latitude"], row["Longitude"]],
         popup=f"{row['Name']}\n{row['Contact']}",
         tooltip=row["Area"],
-        icon=folium.Icon(color=color)
+        icon=folium.Icon(color=color),
     ).add_to(m)
 
-st_folium(
-    m,
-    width=1000,
-    height=600
-)
+st_folium(m, width=1000, height=600)
