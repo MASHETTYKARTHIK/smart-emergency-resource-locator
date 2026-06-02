@@ -1,0 +1,43 @@
+image: python:3.11-slim
+
+stages:
+  - lint
+  - test
+  - build
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+  - python --version
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+
+lint-job:
+  stage: lint
+  script:
+    - pip install flake8 black isort
+    - black --check .
+    - flake8 .
+    - isort --check-only .
+
+test-job:
+  stage: test
+  script:
+    - pip install pytest
+    - pytest tests/
+
+build-job:
+  stage: build
+  script:
+    - echo "Building the application..."
+    # Add container registry push logic here if needed
+  only:
+    - main
