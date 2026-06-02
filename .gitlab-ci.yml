@@ -15,12 +15,14 @@ cache:
     - .cache/pip
     - venv/
 
+
 before_script:
   - python --version
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
   - pip install -r requirements.txt
+  - pip install ruff mypy bandit pip-audit pytest pytest-cov
 
 # Linting Stage
 ruff-format:
