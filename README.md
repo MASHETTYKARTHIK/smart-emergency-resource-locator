@@ -4,7 +4,7 @@
 [![CI/CD Pipeline](https://img.shields.io/badge/GitLab-CI%2FCD-orange)](https://gitlab.com)
 [![Code Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)]()
 
-**OUR DEPLOYED APP LINK:** [Smart Emergency Resource Locator](https://smart-emergency-resource-locator-hlfeste2xaj4ycurgwdjry.streamlit.app/)
+**OUR DEPLOYED APP LINK:** [Smart Emergency Resource Locator]https://smart-emergency-resource-locator-hlfeste2xaj4ycurgwdjry.streamlit.app/
 
 ## 📖 Project Overview
 
