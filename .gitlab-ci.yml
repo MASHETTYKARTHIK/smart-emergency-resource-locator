@@ -38,7 +38,6 @@ ruff-check:
 mypy-check:
   stage: type_check
   script:
-    # Running on specific directories/files avoids venv scanning issues
     - mypy .
 
 # --- SECURITY STAGE ---
@@ -50,14 +49,18 @@ security-bandit:
 security-semgrep:
   stage: security
   image: returntocorp/semgrep
+  variables:
+    SEMGREP_AGENT_TOKEN: $SEMGREP_AGENT_TOKEN
   before_script: []
   script:
-    - semgrep --config auto
+    - semgrep ci --config auto
 
 dependency-audit:
   stage: security
   script:
-    - pip-audit --continue-on-error
+    # Use || true to prevent job failure if vulnerabilities are found, 
+    # as we handle fixes in requirements.txt. Or remove || true to enforce strictness.
+    - pip-audit
 
 # --- TEST STAGE ---
 test-coverage:
