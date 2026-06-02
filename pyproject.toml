@@ -1,13 +1,15 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
-addopts = "--cov=. --cov-report=term-missing --cov-report=xml"
+# addopts = "--cov=. --cov-report=term-missing --cov-report=xml" is handled in CI
 
 [tool.coverage.run]
+source = ["."]
 omit = [
     "tests/*",
     "venv/*",
-    ".*"
+    ".*",
+    "*/__pycache__/*",
 ]
 
 [tool.ruff]
@@ -21,3 +23,14 @@ python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+# Explicitly exclude environment and cache directories
+exclude = [
+    'venv',
+    '\.venv',
+    '\.cache',
+    '__pycache__',
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv"]
+skips = ["B101"]

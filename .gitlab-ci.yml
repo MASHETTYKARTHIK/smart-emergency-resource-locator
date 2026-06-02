@@ -10,8 +10,11 @@ stages:
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PYTHONPATH: "."
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
 
 cache:
+  key: "$CI_COMMIT_REF_SLUG"
   paths:
     - .cache/pip
     - venv/
@@ -24,24 +27,25 @@ before_script:
   - pip install --upgrade pip
   - pip install -r requirements.txt
 
-# Linting Stage
+# --- LINT STAGE ---
 ruff-check:
   stage: lint
   script:
     - ruff format --check .
     - ruff check .
 
-# Type Checking Stage
+# --- TYPE CHECK STAGE ---
 mypy-check:
   stage: type_check
   script:
-    - mypy . --ignore-missing-imports
+    # Running on specific directories/files avoids venv scanning issues
+    - mypy .
 
-# Security Stage
+# --- SECURITY STAGE ---
 security-bandit:
   stage: security
   script:
-    - bandit -r . -ll -x ./tests,./venv
+    - bandit -r . -ll --config pyproject.toml
 
 security-semgrep:
   stage: security
@@ -53,10 +57,9 @@ security-semgrep:
 dependency-audit:
   stage: security
   script:
-    # We use --allow-cyclonedx-fallback in case of network issues
-    - pip-audit --fix --continue-on-error || echo "Audit found issues, but continuing as fix was attempted"
+    - pip-audit --continue-on-error
 
-# Testing & Coverage Stage
+# --- TEST STAGE ---
 test-coverage:
   stage: test
   script:
@@ -67,7 +70,7 @@ test-coverage:
         coverage_format: cobertura
         path: coverage.xml
 
-# Changelog Generation
+# --- DEPLOY STAGE ---
 changelog:
   stage: deploy
   image:
