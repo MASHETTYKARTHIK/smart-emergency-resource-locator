@@ -3,12 +3,3 @@ pandas
 plotly
 folium
 streamlit-folium
-ruff
-mypy
-bandit
-semgrep
-pyupgrade
-pytest
-pytest-cov
-pip-audit
-types-pandas
