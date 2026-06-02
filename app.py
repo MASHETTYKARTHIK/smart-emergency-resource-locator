@@ -1,5 +1,5 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
 # Page Configuration
 st.set_page_config(
@@ -157,7 +157,9 @@ st.markdown(
     """
     <div class="hero-section">
         <div class="hero-title">🚑 Smart Emergency Locator</div>
-        <div class="hero-subtitle">High-speed resource discovery for life-critical situations.</div>
+        <div class="hero-subtitle">
+            High-speed resource discovery for life-critical situations.
+        </div>
     </div>
 """,
     unsafe_allow_html=True,
@@ -218,7 +220,7 @@ if search_btn:
         st.markdown(f"### 📍 Found {len(filtered)} {resource}s in {location}")
 
         # Rendering modern cards instead of plain table
-        for index, row in filtered.iterrows():
+        for _index, row in filtered.iterrows():
             st.markdown(
                 f"""
                 <div class="resource-card">
@@ -230,7 +232,8 @@ if search_btn:
                         <span class="icon">📞</span> <b>Contact:</b> {row["Contact"]}
                     </div>
                     <div class="resource-info">
-                        <span class="icon">🌐</span> <b>Coordinates:</b> {row["Latitude"]}, {row["Longitude"]}
+                        <span class="icon">🌐</span> <b>Coordinates:</b>
+                        {row["Latitude"]}, {row["Longitude"]}
                     </div>
                 </div>
             """,
@@ -243,7 +246,8 @@ else:
     st.markdown(
         """
         <div style="text-align: center; padding: 50px; color: #4A5568;">
-            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" width="100" style="opacity: 0.5;">
+            <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png"
+                 width="100" style="opacity: 0.5;">
             <h3>Select a resource and location above to begin.</h3>
         </div>
     """,
