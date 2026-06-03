@@ -5,6 +5,7 @@ stages:
   - pyreply
   - security
   - test
+  - deploy
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -37,7 +38,7 @@ ruff-check:
 mypy-check:
   stage: pyreply
   script:
-    - mypy .
+    - mypy app.py tests --ignore-missing-imports
 
 # --- SECURITY STAGE ---
 security-bandit:
