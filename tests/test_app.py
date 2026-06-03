@@ -2,6 +2,17 @@ import os
 
 import pandas as pd
 
+from app import haversine
+
+
+def test_haversine_distance():
+    """Test the haversine formula with known coordinates."""
+    # Distance between Gachibowli and HITEC City should be approx 3-4 km
+    lat1, lon1 = 17.4401, 78.3489  # Gachibowli
+    lat2, lon2 = 17.4500, 78.3810  # HITEC City
+    distance = haversine(lat1, lon1, lat2, lon2)
+    assert 3.0 < distance < 5.0
+
 
 def test_data_files_exist():
     """Check if all required CSV files exist in the data directory."""
@@ -27,9 +38,9 @@ def test_csv_structure():
 
     for file_path in data_files:
         df = pd.read_csv(file_path)
-        assert all(
-            col in df.columns for col in expected_columns
-        ), f"Incorrect columns in {file_path}"
+        assert all(col in df.columns for col in expected_columns), (
+            f"Incorrect columns in {file_path}"
+        )
 
 
 def test_area_consistency():
@@ -39,9 +50,9 @@ def test_area_consistency():
 
     # Check if at least one record matches our expected locations
     areas_found = df["Area"].unique()
-    assert any(
-        area in valid_areas for area in areas_found
-    ), "No valid areas found in hospitals.csv"
+    assert any(area in valid_areas for area in areas_found), (
+        "No valid areas found in hospitals.csv"
+    )
 
 
 def test_latitude_longitude_ranges():
@@ -56,9 +67,9 @@ def test_latitude_longitude_ranges():
 
     for file_path in data_files:
         df = pd.read_csv(file_path)
-        assert (
-            df["Latitude"].between(17.0, 18.0).all()
-        ), f"Invalid latitude in {file_path}"
-        assert (
-            df["Longitude"].between(78.0, 79.0).all()
-        ), f"Invalid longitude in {file_path}"
+        assert df["Latitude"].between(17.0, 18.0).all(), (
+            f"Invalid latitude in {file_path}"
+        )
+        assert df["Longitude"].between(78.0, 79.0).all(), (
+            f"Invalid longitude in {file_path}"
+        )

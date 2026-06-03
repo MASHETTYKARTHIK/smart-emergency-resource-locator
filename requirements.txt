@@ -16,3 +16,7 @@ werkzeug>=3.1.8
 pyjwt>=2.13.0
 pandas-stubs
 pre-commit>=3.7.0
+pylint>=3.0.0
+flake8>=7.0.0
+vulture>=2.11
+coverage>=7.4.0

@@ -1,0 +1,18 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Smart Emergency Resource Locator",
+  "description": "A CivicTech project to locate emergency resources in Hyderabad.",
+  "version": "1.0.0",
+  "license": "https://spdx.org/licenses/AGPL-3.0-only.html",
+  "authors": [
+    {
+      "@type": "Person",
+      "givenName": "Manoj",
+      "familyName": "Team MTSKV"
+    }
+  ],
+  "developmentStatus": "active",
+  "programmingLanguage": "Python",
+  "runtimePlatform": "Streamlit"
+}
