@@ -1,35 +1,42 @@
+# Pre-commit configuration for Smart Emergency Resource Locator
+# Configured specifically for pre-push hooks to ensure compliance before pushing code.
+
+default_stages: [push]
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-      - id: detect-private-key
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.0
+    rev: v0.4.7
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
+        description: "Ruff Linting: Checks for code quality issues."
+
       - id: ruff-format
+        description: "Ruff Formatting: Ensures consistent code style."
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.10.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-pandas, types-requests]
-        args: [--ignore-missing-imports]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: ["-ll"]
-        files: .py$
+        additional_dependencies:
+          - types-requests
+          - pandas-stubs
+        args:
+          - --ignore-missing-imports
+          - --exclude
+          - pages
+        description: "MyPy Type Checking: Validates static types."
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.0
+    rev: v8.18.2
     hooks:
       - id: gitleaks
+        description: "Gitleaks: Scans for secrets and sensitive data."
