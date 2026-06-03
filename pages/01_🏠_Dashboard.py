@@ -54,7 +54,7 @@ all_data = pd.concat(
 )
 
 area_count = all_data["Area"].value_counts().reset_index()
-area_count.columns = ["Area", "Resources"]
+area_count.columns = pd.Index(["Area", "Resources"])
 
 area_chart = px.bar(
     area_count, x="Area", y="Resources", title="Area-wise Resource Distribution"

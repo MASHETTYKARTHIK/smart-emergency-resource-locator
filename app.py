@@ -1,6 +1,8 @@
+import math
+
 import pandas as pd
 import streamlit as st
-import math
+
 
 # --- DISTANCE CALCULATIONS ---
 def haversine(lat1, lon1, lat2, lon2):
@@ -8,9 +10,15 @@ def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of earth in km
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
-    a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
+    )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
+
 
 # Predefined coordinates for areas
 AREA_COORDS = {
@@ -54,7 +62,9 @@ st.markdown(
         margin-bottom: 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
-    .hero-title { color: #FF4B4B; font-size: 3rem; font-weight: 700; margin-bottom: 10px; }
+    .hero-title {
+        color: #FF4B4B; font-size: 3rem; font-weight: 700; margin-bottom: 10px;
+    }
     .hero-subtitle { color: #888888; font-size: 1.2rem; }
     .resource-card {
         background-color: #1E252E;
@@ -70,11 +80,21 @@ st.markdown(
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(255, 75, 75, 0.1);
     }
-    .resource-name { color: #FFFFFF; font-size: 1.4rem; font-weight: 600; margin-bottom: 10px; }
-    .resource-info { color: #A0AEC0; font-size: 1rem; margin-bottom: 5px; display: flex; align-items: center; }
+    .resource-name {
+        color: #FFFFFF; font-size: 1.4rem; font-weight: 600; margin-bottom: 10px;
+    }
+    .resource-info {
+        color: #A0AEC0; font-size: 1rem; margin-bottom: 5px;
+        display: flex; align-items: center;
+    }
     .icon { margin-right: 10px; color: #FF4B4B; }
-    section[data-testid="stSidebar"] { background-color: #161B22; border-right: 1px solid #2D3748; }
-    div[data-testid="metric-container"] { background-color: #1A202C; border: 1px solid #2D3748; padding: 20px; border-radius: 15px; text-align: center; }
+    section[data-testid="stSidebar"] {
+        background-color: #161B22; border-right: 1px solid #2D3748;
+    }
+    div[data-testid="metric-container"] {
+        background-color: #1A202C; border: 1px solid #2D3748;
+        padding: 20px; border-radius: 15px; text-align: center;
+    }
     .stButton>button {
         width: 100%;
         background: linear-gradient(135deg, #FF4B4B 0%, #D32F2F 100%);
@@ -87,7 +107,10 @@ st.markdown(
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-    .stButton>button:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4); }
+    .stButton>button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4);
+    }
     .nav-btn {
         display: inline-block;
         padding: 8px 16px;
@@ -124,7 +147,9 @@ st.markdown(
     """
     <div class="hero-section">
         <div class="hero-title">🚑 Smart Emergency Locator</div>
-        <div class="hero-subtitle">High-speed resource discovery for life-critical situations.</div>
+        <div class="hero-subtitle">
+            High-speed resource discovery for life-critical situations.
+        </div>
     </div>
 """,
     unsafe_allow_html=True,
@@ -133,7 +158,10 @@ st.markdown(
 # --- SEARCH PANEL ---
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
-    resource_type = st.selectbox("What do you need?", ["Hospital", "Blood Bank", "Police Station", "Fire Station"])
+    resource_type = st.selectbox(
+        "What do you need?",
+        ["Hospital", "Blood Bank", "Police Station", "Fire Station"],
+    )
 with col2:
     user_area = st.selectbox("Select Area", list(AREA_COORDS.keys()))
 with col3:
@@ -148,16 +176,24 @@ if search_btn:
         "Hospital": "data/hospitals.csv",
         "Blood Bank": "data/bloodbanks.csv",
         "Police Station": "data/policestations.csv",
-        "Fire Station": "data/firestations.csv"
+        "Fire Station": "data/firestations.csv",
     }
-    icon_map = {"Hospital": "🏥", "Blood Bank": "🩸", "Police Station": "👮", "Fire Station": "🚒"}
-    
+    icon_map = {
+        "Hospital": "🏥",
+        "Blood Bank": "🩸",
+        "Police Station": "👮",
+        "Fire Station": "🚒",
+    }
+
     df = pd.read_csv(file_map[resource_type])
-    
+
     # Calculate Distances
     user_lat, user_lon = AREA_COORDS[user_area]
-    df["Distance (km)"] = df.apply(lambda row: haversine(user_lat, user_lon, row["Latitude"], row["Longitude"]), axis=1)
-    
+    df["Distance (km)"] = df.apply(
+        lambda row: haversine(user_lat, user_lon, row["Latitude"], row["Longitude"]),
+        axis=1,
+    )
+
     # Sort
     sorted_df = df.sort_values(by="Distance (km)")
 
@@ -166,14 +202,23 @@ if search_btn:
     for _index, row in sorted_df.iterrows():
         # Navigation link: Explicitly use resource row coordinates for destination
         nav_link = f"https://www.google.com/maps/dir/?api=1&destination={row['Latitude']},{row['Longitude']}"
-        
+
         st.markdown(
             f"""
             <div class="resource-card">
-                <div class="resource-name">{icon_map[resource_type]} {row["Name"]}</div>
-                <div class="resource-info"><span class="icon">📍</span> <b>Area:</b> {row["Area"]}</div>
-                <div class="resource-info"><span class="icon">📏</span> <b>Distance:</b> {row["Distance (km)"]:.2f} km</div>
-                <div class="resource-info"><span class="icon">📞</span> <b>Contact:</b> {row["Contact"]}</div>
+                <div class="resource-name">
+                    {icon_map[resource_type]} {row["Name"]}
+                </div>
+                <div class="resource-info">
+                    <span class="icon">📍</span> <b>Area:</b> {row["Area"]}
+                </div>
+                <div class="resource-info">
+                    <span class="icon">📏</span> <b>Distance:</b>
+                    {row["Distance (km)"]:.2f} km
+                </div>
+                <div class="resource-info">
+                    <span class="icon">📞</span> <b>Contact:</b> {row["Contact"]}
+                </div>
                 <a href="{nav_link}" target="_blank" class="nav-btn">🧭 Navigate</a>
             </div>
             """,
@@ -181,4 +226,11 @@ if search_btn:
         )
 
 # --- FOOTER ---
-st.markdown("<div style='text-align: center; color: #4A5568; margin-top: 50px;'>© 2026 Team MTSKV | Smart Emergency Resource Locator</div>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <div style='text-align: center; color: #4A5568; margin-top: 50px;'>
+        © 2026 Team MTSKV | Smart Emergency Resource Locator
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
