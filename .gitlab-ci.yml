@@ -2,10 +2,9 @@ image: python:3.11-slim
 
 stages:
   - lint
-  - type_check
+  - pyreply
   - security
   - test
-  - deploy
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -36,7 +35,7 @@ ruff-check:
 
 # --- TYPE CHECK STAGE ---
 mypy-check:
-  stage: type_check
+  stage: pyreply
   script:
     - mypy .
 
@@ -58,7 +57,7 @@ security-semgrep:
 dependency-audit:
   stage: security
   script:
-    # Use || true to prevent job failure if vulnerabilities are found, 
+    # Use || true to prevent job failure if vulnerabilities are found,
     # as we handle fixes in requirements.txt. Or remove || true to enforce strictness.
     - pip-audit
 
