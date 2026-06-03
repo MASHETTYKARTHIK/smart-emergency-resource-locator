@@ -51,7 +51,9 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    @import url(
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'
+    );
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     .main { background-color: #0E1117; }
     .hero-section {
@@ -201,7 +203,10 @@ if search_btn:
 
     for _index, row in sorted_df.iterrows():
         # Navigation link: Explicitly use resource row coordinates for destination
-        nav_link = f"https://www.google.com/maps/dir/?api=1&destination={row['Latitude']},{row['Longitude']}"
+        nav_link = (
+            f"https://www.google.com/maps/dir/?api=1&"
+            f"destination={row['Latitude']},{row['Longitude']}"
+        )
 
         st.markdown(
             f"""
