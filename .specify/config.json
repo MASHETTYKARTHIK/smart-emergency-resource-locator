@@ -1,0 +1,11 @@
+{
+  "project_name": "Smart Emergency Resource Locator",
+  "version": "1.0.0",
+  "spec_dir": "specs",
+  "template_dir": "templates",
+  "compliance": {
+    "framework": "Swecha",
+    "standards": ["Ruff", "MyPy", "Semgrep", "Spec-Kit"]
+  },
+  "team": ["Manoj", "Teja", "Sampath", "Karthik", "Viplav"]
+}
