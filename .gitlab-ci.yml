@@ -1,10 +1,12 @@
 image: python:3.11-slim
 
 stages:
+  - format
   - lint
-  - pyreply
+  - type_check
   - security
   - test
+  - coverage
   - deploy
 
 variables:
@@ -27,18 +29,43 @@ before_script:
   - pip install --upgrade pip
   - pip install -r requirements.txt
 
+# --- FORMAT STAGE ---
+ruff-format-check:
+  stage: format
+  script:
+    - ruff format --check .
+
+pyupgrade-check:
+  stage: format
+  script:
+    - pyupgrade --py311-plus **/*.py
+
 # --- LINT STAGE ---
 ruff-check:
   stage: lint
   script:
-    - ruff format --check .
     - ruff check .
+
+pylint-check:
+  stage: lint
+  script:
+    - pylint **/*.py --fail-under=8.0
+
+flake8-check:
+  stage: lint
+  script:
+    - flake8 . --max-line-length=88 --extend-ignore=E203
+
+vulture-check:
+  stage: lint
+  script:
+    - vulture .
 
 # --- TYPE CHECK STAGE ---
 mypy-check:
-  stage: pyreply
+  stage: type_check
   script:
-    - mypy app.py tests --ignore-missing-imports
+    - mypy .
 
 # --- SECURITY STAGE ---
 security-bandit:
@@ -58,13 +85,17 @@ security-semgrep:
 dependency-audit:
   stage: security
   script:
-    # Use || true to prevent job failure if vulnerabilities are found,
-    # as we handle fixes in requirements.txt. Or remove || true to enforce strictness.
     - pip-audit
 
 # --- TEST STAGE ---
-test-coverage:
+unit-tests:
   stage: test
+  script:
+    - pytest
+
+# --- COVERAGE STAGE ---
+coverage-report:
+  stage: coverage
   script:
     - pytest --cov=. --cov-report=xml --cov-report=term
   artifacts:
@@ -89,4 +120,4 @@ changelog:
       - CHANGELOG.md
   only:
     - main
-    - pipelineerrorfixing
+    - compliance-fix
