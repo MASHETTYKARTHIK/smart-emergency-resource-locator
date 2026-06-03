@@ -27,9 +27,9 @@ def test_csv_structure():
 
     for file_path in data_files:
         df = pd.read_csv(file_path)
-        assert all(col in df.columns for col in expected_columns), (
-            f"Incorrect columns in {file_path}"
-        )
+        assert all(
+            col in df.columns for col in expected_columns
+        ), f"Incorrect columns in {file_path}"
 
 
 def test_area_consistency():
@@ -39,9 +39,9 @@ def test_area_consistency():
 
     # Check if at least one record matches our expected locations
     areas_found = df["Area"].unique()
-    assert any(area in valid_areas for area in areas_found), (
-        "No valid areas found in hospitals.csv"
-    )
+    assert any(
+        area in valid_areas for area in areas_found
+    ), "No valid areas found in hospitals.csv"
 
 
 def test_latitude_longitude_ranges():
@@ -56,9 +56,9 @@ def test_latitude_longitude_ranges():
 
     for file_path in data_files:
         df = pd.read_csv(file_path)
-        assert df["Latitude"].between(17.0, 18.0).all(), (
-            f"Invalid latitude in {file_path}"
-        )
-        assert df["Longitude"].between(78.0, 79.0).all(), (
-            f"Invalid longitude in {file_path}"
-        )
+        assert (
+            df["Latitude"].between(17.0, 18.0).all()
+        ), f"Invalid latitude in {file_path}"
+        assert (
+            df["Longitude"].between(78.0, 79.0).all()
+        ), f"Invalid longitude in {file_path}"
