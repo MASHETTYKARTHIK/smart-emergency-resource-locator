@@ -76,8 +76,9 @@ test-coverage:
         path: coverage.xml
 
 # --- DEPLOY STAGE ---
+# --- CHANGELOG STAGE ---
 changelog:
-  stage: deploy
+  stage: changelog
   image:
     name: orhunp/git-cliff:latest
     entrypoint: [""]
