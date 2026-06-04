@@ -1,0 +1,14 @@
+-r requirements.txt
+ruff
+mypy
+bandit
+semgrep
+pyupgrade
+pytest
+pytest-cov
+pip-audit
+pre-commit
+pandas-stubs
+flake8
+pylint
+vulture

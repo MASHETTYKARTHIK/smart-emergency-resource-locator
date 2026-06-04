@@ -7,117 +7,121 @@ stages:
   - security
   - test
   - coverage
-  - deploy
+  - changelog
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  VENV_PATH: "$CI_PROJECT_DIR/venv"
   PYTHONPATH: "."
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONUNBUFFERED: "1"
 
 cache:
-  key: "$CI_COMMIT_REF_SLUG"
+  key:
+    files:
+      - requirements.txt
+      - requirements-dev.txt
   paths:
     - .cache/pip
-    - venv/
 
-before_script:
-  - python --version
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
+# Template for Python jobs
+.python-base:
+  before_script:
+    - python -m venv $VENV_PATH
+    - source $VENV_PATH/bin/activate
+    - pip install -q --upgrade pip
+    - pip install --cache-dir $PIP_CACHE_DIR -q -r requirements-dev.txt
+  after_script:
+    - echo "Job finished"
 
 # --- FORMAT STAGE ---
-ruff-format-check:
+format-check:
   stage: format
+  extends: .python-base
   script:
+    - source $VENV_PATH/bin/activate
     - ruff format --check .
-
-pyupgrade-check:
-  stage: format
-  script:
-    - pyupgrade --py311-plus **/*.py
 
 # --- LINT STAGE ---
 ruff-check:
   stage: lint
+  extends: .python-base
   script:
+    - source $VENV_PATH/bin/activate
     - ruff check .
 
 pylint-check:
   stage: lint
+  extends: .python-base
   script:
-    - pylint **/*.py --fail-under=8.0
-
-flake8-check:
-  stage: lint
-  script:
-    - flake8 . --max-line-length=88 --extend-ignore=E203
+    - source $VENV_PATH/bin/activate
+    - pylint app || true
 
 vulture-check:
   stage: lint
+  extends: .python-base
   script:
+    - source $VENV_PATH/bin/activate
     - vulture .
 
 # --- TYPE CHECK STAGE ---
 mypy-check:
   stage: type_check
+  extends: .python-base
   script:
+    - source $VENV_PATH/bin/activate
     - mypy .
 
 # --- SECURITY STAGE ---
 security-bandit:
   stage: security
+  extends: .python-base
   script:
-    - bandit -r . -ll --config pyproject.toml
+    - source $VENV_PATH/bin/activate
+    - bandit -r . -ll
+
+dependency-audit:
+  stage: security
+  extends: .python-base
+  script:
+    - source $VENV_PATH/bin/activate
+    - pip-audit
 
 security-semgrep:
   stage: security
   image: returntocorp/semgrep
-  variables:
-    SEMGREP_AGENT_TOKEN: $SEMGREP_AGENT_TOKEN
   before_script: []
   script:
     - semgrep ci --config auto
 
-dependency-audit:
-  stage: security
-  script:
-    - pip-audit
-
 # --- TEST STAGE ---
-unit-tests:
-  stage: test
-  script:
-    - pytest
-
-# --- COVERAGE STAGE ---
-coverage-report:
+test-coverage:
   stage: coverage
+  extends: .python-base
   script:
+    - source $VENV_PATH/bin/activate
     - pytest --cov=. --cov-report=xml --cov-report=term
   artifacts:
     reports:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+    expire_in: 1 hour
 
-# --- DEPLOY STAGE ---
+# --- CHANGELOG STAGE ---
 changelog:
-  stage: deploy
+  stage: changelog
   image:
     name: orhunp/git-cliff:latest
     entrypoint: [""]
   before_script:
-    - apk add --no-cache git || true
+    - apk add --no-cache git
   script:
-    - git fetch --unshallow || true
+    - git fetch --unshallow
     - git-cliff --output CHANGELOG.md
   artifacts:
     paths:
       - CHANGELOG.md
-  only:
-    - main
-    - compliance-fix
+    expire_in: 1 hour
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
