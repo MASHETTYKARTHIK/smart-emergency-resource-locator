@@ -1,10 +1,13 @@
 image: python:3.11-slim
 
 stages:
+  - format
   - lint
-  - pyreply
+  - type_check
   - security
   - test
+  - coverage
+  - changelog
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
