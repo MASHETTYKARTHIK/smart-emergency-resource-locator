@@ -1,7 +1,5 @@
 # Pre-commit configuration for Smart Emergency Resource Locator
-# Compliance-ready configuration
-
-default_stages: [pre-push]
+default_stages: [commit, push]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -13,14 +11,11 @@ repos:
       - id: check-added-large-files
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.2
+    rev: v0.15.15
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
-        description: "Ruff Linting: Checks for code quality issues."
-
       - id: ruff-format
-        description: "Ruff Formatting: Ensures consistent code style."
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.10.0
@@ -29,40 +24,28 @@ repos:
         additional_dependencies:
           - types-requests
           - pandas-stubs
-        args:
-          - --ignore-missing-imports
-          - --exclude
-          - pages
-        description: "MyPy Type Checking: Validates static types."
+        args: [--ignore-missing-imports]
 
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
-        args:
-          - --max-line-length=88
-          - --extend-ignore=E203
-        description: "Flake8: Additional linting checks."
+        args: [--max-line-length=88, --extend-ignore=E203]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
     hooks:
       - id: pyupgrade
-        args:
-          - --py311-plus
-        description: "PyUpgrade: Upgrades syntax to modern Python."
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
-    hooks:
-      - id: bandit
-        args:
-          - -ll
-        exclude: ^tests/
-        description: "Bandit: Security vulnerability scanning."
+        args: [--py311-plus]
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.2
     hooks:
       - id: gitleaks
-        description: "Gitleaks: Scans for secrets and sensitive data."
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args: ["-ll"]
+        exclude: ^tests/

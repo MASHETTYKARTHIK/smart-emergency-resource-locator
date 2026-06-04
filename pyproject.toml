@@ -1,7 +1,23 @@
+[project]
+name = "smart-emergency-resource-locator"
+version = "1.0.0"
+description = "A CivicTech project to locate emergency resources in Hyderabad."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Team MTSKV" }
+]
+license = { text = "AGPL-3.0" }
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
-# addopts = "--cov=. --cov-report=term-missing --cov-report=xml" is handled in CI
+addopts = "--cov=. --cov-report=term-missing --cov-report=xml"
 
 [tool.coverage.run]
 source = ["."]
@@ -14,6 +30,12 @@ omit = [
 
 [tool.ruff]
 line-length = 88
+target-version = "py311"
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+line-ending = "lf"
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "I"]
@@ -34,3 +56,19 @@ exclude = [
 [tool.bandit]
 exclude_dirs = ["tests", "venv", ".venv"]
 skips = ["B101"]
+
+[tool.pylint]
+max-line-length = 88
+disable = [
+    "C0114", # missing-module-docstring
+    "C0115", # missing-class-docstring
+    "C0116", # missing-function-docstring
+    "C0103", # invalid-name
+    "W2402", # non-ascii-file-name
+    "E0401", # import-error
+]
+
+[tool.vulture]
+min_confidence = 80
+paths = ["."]
+exclude = ["venv", ".venv", ".git"]

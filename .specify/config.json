@@ -1,11 +1,18 @@
 {
   "project_name": "Smart Emergency Resource Locator",
+  "project_id": "smart-emergency-locator",
   "version": "1.0.0",
+  "description": "High-speed resource discovery for life-critical situations in Hyderabad.",
   "spec_dir": "specs",
   "template_dir": "templates",
+  "constitution_file": "constitution.md",
   "compliance": {
     "framework": "Swecha",
-    "standards": ["Ruff", "MyPy", "Semgrep", "Spec-Kit"]
+    "standards": ["Ruff", "MyPy", "Semgrep", "Spec-Kit", "Bandit", "Pylint"],
+    "score_target": 100
   },
-  "team": ["Manoj", "Teja", "Sampath", "Karthik", "Viplav"]
+  "team": {
+    "lead": "Manoj",
+    "members": ["Teja", "Sampath", "Karthik", "Viplav"]
+  }
 }
