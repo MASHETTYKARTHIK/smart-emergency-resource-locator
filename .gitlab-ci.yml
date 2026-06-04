@@ -1,7 +1,6 @@
 image: python:3.11-slim
 
 stages:
-  - build
   - lint
   - type_check
   - security
@@ -22,33 +21,21 @@ cache:
       - requirements-dev.txt
   paths:
     - .cache/pip
-    - venv/
 
 # Template for Python jobs
-.python-job:
+.python-base:
   before_script:
     - python -m venv $VENV_PATH
     - source $VENV_PATH/bin/activate
     - pip install -q --upgrade pip
+    - pip install --cache-dir $PIP_CACHE_DIR -q -r requirements-dev.txt
   after_script:
     - echo "Job finished"
-
-# --- BUILD STAGE ---
-build-env:
-  stage: build
-  extends: .python-job
-  script:
-    - pip install -q -r requirements-dev.txt
-  artifacts:
-    paths:
-      - venv/
-    expire_in: 1 hour
 
 # --- LINT STAGE ---
 ruff-check:
   stage: lint
-  extends: .python-job
-  dependencies: [build-env]
+  extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
     - ruff format --check .
@@ -57,8 +44,7 @@ ruff-check:
 # --- TYPE CHECK STAGE ---
 mypy-check:
   stage: type_check
-  extends: .python-job
-  dependencies: [build-env]
+  extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
     - mypy .
@@ -66,16 +52,14 @@ mypy-check:
 # --- SECURITY STAGE ---
 security-bandit:
   stage: security
-  extends: .python-job
-  dependencies: [build-env]
+  extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
     - bandit -r . -ll
 
 dependency-audit:
   stage: security
-  extends: .python-job
-  dependencies: [build-env]
+  extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
     - pip-audit
@@ -83,14 +67,14 @@ dependency-audit:
 security-semgrep:
   stage: security
   image: returntocorp/semgrep
+  before_script: []
   script:
     - semgrep ci --config auto
 
 # --- TEST STAGE ---
 test-coverage:
   stage: test
-  extends: .python-job
-  dependencies: [build-env]
+  extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
     - pytest --cov=. --cov-report=xml --cov-report=term
@@ -99,6 +83,7 @@ test-coverage:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+    expire_in: 1 hour
 
 # --- CHANGELOG STAGE ---
 changelog:
@@ -114,5 +99,6 @@ changelog:
   artifacts:
     paths:
       - CHANGELOG.md
+    expire_in: 1 hour
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
