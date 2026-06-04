@@ -38,7 +38,7 @@ ruff-check:
 
 # --- TYPE CHECK STAGE ---
 mypy-check:
-  stage: pyreply
+  stage: type_check
   script:
     - mypy .
 
