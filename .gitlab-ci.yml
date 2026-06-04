@@ -1,73 +1,98 @@
 image: python:3.11-slim
 
 stages:
-  - format
+  - build
   - lint
   - type_check
   - security
   - test
-  - coverage
   - changelog
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  VENV_PATH: "$CI_PROJECT_DIR/venv"
   PYTHONPATH: "."
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONUNBUFFERED: "1"
 
 cache:
-  key: "$CI_COMMIT_REF_SLUG"
+  key:
+    files:
+      - requirements.txt
+      - requirements-dev.txt
   paths:
     - .cache/pip
     - venv/
 
-before_script:
-  - python --version
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
+# Template for Python jobs
+.python-job:
+  before_script:
+    - python -m venv $VENV_PATH
+    - source $VENV_PATH/bin/activate
+    - pip install -q --upgrade pip
+  after_script:
+    - echo "Job finished"
+
+# --- BUILD STAGE ---
+build-env:
+  stage: build
+  extends: .python-job
+  script:
+    - pip install -q -r requirements-dev.txt
+  artifacts:
+    paths:
+      - venv/
+    expire_in: 1 hour
 
 # --- LINT STAGE ---
 ruff-check:
   stage: lint
+  extends: .python-job
+  dependencies: [build-env]
   script:
+    - source $VENV_PATH/bin/activate
     - ruff format --check .
     - ruff check .
 
 # --- TYPE CHECK STAGE ---
 mypy-check:
   stage: type_check
+  extends: .python-job
+  dependencies: [build-env]
   script:
+    - source $VENV_PATH/bin/activate
     - mypy .
 
 # --- SECURITY STAGE ---
 security-bandit:
   stage: security
+  extends: .python-job
+  dependencies: [build-env]
   script:
-    - bandit -r . -ll --config pyproject.toml
+    - source $VENV_PATH/bin/activate
+    - bandit -r . -ll
+
+dependency-audit:
+  stage: security
+  extends: .python-job
+  dependencies: [build-env]
+  script:
+    - source $VENV_PATH/bin/activate
+    - pip-audit
 
 security-semgrep:
   stage: security
   image: returntocorp/semgrep
-  variables:
-    SEMGREP_AGENT_TOKEN: $SEMGREP_AGENT_TOKEN
-  before_script: []
   script:
     - semgrep ci --config auto
-
-dependency-audit:
-  stage: security
-  script:
-    # Use || true to prevent job failure if vulnerabilities are found,
-    # as we handle fixes in requirements.txt. Or remove || true to enforce strictness.
-    - pip-audit
 
 # --- TEST STAGE ---
 test-coverage:
   stage: test
+  extends: .python-job
+  dependencies: [build-env]
   script:
+    - source $VENV_PATH/bin/activate
     - pytest --cov=. --cov-report=xml --cov-report=term
   artifacts:
     reports:
@@ -75,7 +100,6 @@ test-coverage:
         coverage_format: cobertura
         path: coverage.xml
 
-# --- DEPLOY STAGE ---
 # --- CHANGELOG STAGE ---
 changelog:
   stage: changelog
@@ -83,13 +107,12 @@ changelog:
     name: orhunp/git-cliff:latest
     entrypoint: [""]
   before_script:
-    - apk add --no-cache git || true
+    - apk add --no-cache git
   script:
-    - git fetch --unshallow || true
+    - git fetch --unshallow
     - git-cliff --output CHANGELOG.md
   artifacts:
     paths:
       - CHANGELOG.md
-  only:
-    - main
-    - pipelineerrorfixing
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
