@@ -1,7 +1,7 @@
 # Pre-commit configuration for Smart Emergency Resource Locator
-# Configured specifically for pre-push hooks to ensure compliance before pushing code.
+# Compliance-ready configuration
 
-default_stages: [push]
+default_stages: [pre-push]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -13,7 +13,7 @@ repos:
       - id: check-added-large-files
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.7
+    rev: v0.8.2
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -34,6 +34,32 @@ repos:
           - --exclude
           - pages
         description: "MyPy Type Checking: Validates static types."
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args:
+          - --max-line-length=88
+          - --extend-ignore=E203
+        description: "Flake8: Additional linting checks."
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+        args:
+          - --py311-plus
+        description: "PyUpgrade: Upgrades syntax to modern Python."
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args:
+          - -ll
+        exclude: ^tests/
+        description: "Bandit: Security vulnerability scanning."
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.2
