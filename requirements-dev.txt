@@ -11,3 +11,5 @@ pre-commit
 pandas-stubs
 flake8
 types-requests
+vulture
+pylint

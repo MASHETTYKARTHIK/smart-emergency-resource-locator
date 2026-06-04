@@ -1,10 +1,12 @@
 image: python:3.11-slim
 
 stages:
+  - format
   - lint
   - type_check
   - security
   - test
+  - coverage
   - changelog
 
 variables:
@@ -32,14 +34,35 @@ cache:
   after_script:
     - echo "Job finished"
 
+# --- FORMAT STAGE ---
+format-check:
+  stage: format
+  extends: .python-base
+  script:
+    - source $VENV_PATH/bin/activate
+    - ruff format --check .
+
 # --- LINT STAGE ---
 ruff-check:
   stage: lint
   extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
-    - ruff format --check .
     - ruff check .
+
+pylint-check:
+  stage: lint
+  extends: .python-base
+  script:
+    - source $VENV_PATH/bin/activate
+    - pylint app || true
+
+vulture-check:
+  stage: lint
+  extends: .python-base
+  script:
+    - source $VENV_PATH/bin/activate
+    - vulture .
 
 # --- TYPE CHECK STAGE ---
 mypy-check:
@@ -73,7 +96,7 @@ security-semgrep:
 
 # --- TEST STAGE ---
 test-coverage:
-  stage: test
+  stage: coverage
   extends: .python-base
   script:
     - source $VENV_PATH/bin/activate
