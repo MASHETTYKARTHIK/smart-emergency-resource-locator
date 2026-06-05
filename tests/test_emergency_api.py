@@ -1,7 +1,9 @@
-import pytest
 from unittest.mock import MagicMock
-from src.api.emergency.service import EmergencyService
+
+import pytest
+
 from src.api.emergency.client import EmergencyClient
+from src.api.emergency.service import EmergencyService
 
 
 @pytest.fixture

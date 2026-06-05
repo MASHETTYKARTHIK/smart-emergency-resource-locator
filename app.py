@@ -1,6 +1,6 @@
 import math
-import sys
 import os
+import sys
 
 import pandas as pd
 import streamlit as st
@@ -8,9 +8,9 @@ import streamlit as st
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 from components.sidebar import (
-    render_sidebar,
     render_language_selector,
     render_page_styling,
+    render_sidebar,
 )
 
 

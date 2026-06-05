@@ -1,4 +1,5 @@
 from flask import Flask
+
 from src.api.emergency.routes import emergency_bp
 
 
