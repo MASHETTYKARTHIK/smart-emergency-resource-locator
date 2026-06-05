@@ -1,10 +1,21 @@
+import sys
+import os
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-st.set_page_config(page_title="Dashboard")
+# Add src to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+from components.sidebar import render_sidebar, render_language_selector, render_page_styling
 
-st.title("📊 Smart Emergency Resource Locator Dashboard")
+st.set_page_config(page_title="Dashboard", layout="wide")
+
+# Render Components
+render_sidebar()
+render_language_selector()
+render_page_styling()
+
+st.title("📊 RESOURCES DASHBOARD")
 
 hospitals = pd.read_csv("data/hospitals.csv")
 bloodbanks = pd.read_csv("data/bloodbanks.csv")
