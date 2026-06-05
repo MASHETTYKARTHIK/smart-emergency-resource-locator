@@ -1,5 +1,7 @@
 from flask import Flask
+
 from src.api.emergency.routes import emergency_bp
+
 
 def create_app() -> Flask:
     """Create and configure the Flask application."""
@@ -13,6 +15,7 @@ def create_app() -> Flask:
         return {"status": "ok", "service": "Emergency Resource API"}
 
     return app
+
 
 if __name__ == "__main__":
     app = create_app()
