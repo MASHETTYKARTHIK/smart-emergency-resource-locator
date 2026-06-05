@@ -7,7 +7,12 @@ import streamlit as st
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
-from components.sidebar import render_sidebar, render_language_selector, render_page_styling
+from components.sidebar import (
+    render_sidebar,
+    render_language_selector,
+    render_page_styling,
+)
+
 
 # --- DISTANCE CALCULATIONS ---
 def haversine(lat1, lon1, lat2, lon2):

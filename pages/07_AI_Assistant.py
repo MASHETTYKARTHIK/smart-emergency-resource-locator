@@ -4,7 +4,11 @@ import streamlit as st
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
-from components.sidebar import render_sidebar, render_language_selector, render_page_styling
+from components.sidebar import (
+    render_sidebar,
+    render_language_selector,
+    render_page_styling,
+)
 
 st.set_page_config(page_title="AI Assistant", layout="wide")
 
@@ -15,7 +19,8 @@ render_page_styling()
 
 st.title("🤖 AI Emergency Assistant")
 
-st.markdown("""
+st.markdown(
+    """
     <div class="hero-section" style="padding: 30px;">
         <div style="display: flex; align-items: center; gap: 15px;">
             <div style="background: rgba(255, 75, 75, 0.1); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 75, 75, 0.2);">
@@ -27,20 +32,23 @@ st.markdown("""
             </div>
         </div>
     </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 user_input = st.text_area(
-    "Emergency Description", 
+    "Emergency Description",
     placeholder="Example: Medical emergency near HITEC City or fire reported in Banjara Hills...",
-    height=120
+    height=120,
 )
 
 if st.button("Analyze Situation"):
     if user_input:
         text = user_input.lower()
-        
+
         # User Message
-        st.markdown(f"""
+        st.markdown(
+            f"""
             <div class="chat-message user">
                 <span class="material-symbols-rounded" style="color: #94A3B8;">person</span>
                 <div>
@@ -48,7 +56,9 @@ if st.button("Analyze Situation"):
                     <div style="color: #CBD5E1;">{user_input}</div>
                 </div>
             </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         # Bot logic
         response = None
@@ -68,13 +78,16 @@ if st.button("Analyze Situation"):
             service = "Fire Station"
             icon = "fire_truck"
             suggestion = "Gachibowli Fire Station"
-        elif "theft" in text or "robbery" in text or "crime" in text or "police" in text:
+        elif (
+            "theft" in text or "robbery" in text or "crime" in text or "police" in text
+        ):
             service = "Police Station"
             icon = "local_police"
             suggestion = "Gachibowli Police Station"
 
         if service:
-            st.markdown(f"""
+            st.markdown(
+                f"""
                 <div class="chat-message bot">
                     <span class="material-symbols-rounded" style="color: #FF4B4B;">smart_toy</span>
                     <div>
@@ -89,9 +102,12 @@ if st.button("Analyze Situation"):
                         </div>
                     </div>
                 </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
         else:
-            st.markdown("""
+            st.markdown(
+                """
                 <div class="chat-message bot">
                     <span class="material-symbols-rounded" style="color: #FF4B4B;">smart_toy</span>
                     <div>
@@ -99,6 +115,8 @@ if st.button("Analyze Situation"):
                         <div style="color: #F8FAFC;">I'm having trouble identifying the emergency type. Please provide more specific details (e.g., medical, fire, accident).</div>
                     </div>
                 </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
     else:
         st.warning("Please enter a description first.")

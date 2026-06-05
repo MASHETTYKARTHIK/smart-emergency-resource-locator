@@ -1,8 +1,10 @@
 import streamlit as st
 
+
 def render_sidebar():
     # --- PREMIUM CSS STYLING ---
-    st.markdown("""
+    st.markdown(
+        """
     <style>
         /* Import Premium Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -95,11 +97,14 @@ def render_sidebar():
             margin: 20px 0 10px 8px;
         }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
         # App Logo & Branding - Clean "RESOURCES"
-        st.markdown("""
+        st.markdown(
+            """
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 30px; padding: 10px 10px;">
             <div style="background: linear-gradient(135deg, #FF4B4B 0%, #D32F2F 100%); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(255, 75, 75, 0.3);">
                 <span class="material-symbols-rounded" style="color: white; font-size: 22px;">emergency</span>
@@ -108,10 +113,13 @@ def render_sidebar():
                 <div style="font-size: 1.2rem; font-weight: 700; color: white; letter-spacing: 1px;">RESOURCES</div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         # Mission Control Card
-        st.markdown("""
+        st.markdown(
+            """
         <div class="mission-control-card">
             <div style="position: relative; z-index: 1;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
@@ -126,25 +134,36 @@ def render_sidebar():
                 </p>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         # Navigation
-        st.markdown('<div class="sidebar-section-label">General</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="sidebar-section-label">General</div>', unsafe_allow_html=True
+        )
         st.page_link("app.py", label="Home", icon="🏠")
         st.page_link("pages/01_Dashboard.py", label="Dashboard", icon="📊")
         st.page_link("pages/02_Resource_Map.py", label="Resource Map", icon="🗺️")
-        
-        st.markdown('<div class="sidebar-section-label">Resources</div>', unsafe_allow_html=True)
+
+        st.markdown(
+            '<div class="sidebar-section-label">Resources</div>', unsafe_allow_html=True
+        )
         st.page_link("pages/03_Hospitals.py", label="Hospitals", icon="🏥")
         st.page_link("pages/04_Blood_Banks.py", label="Blood Banks", icon="🩸")
         st.page_link("pages/05_Fire_Stations.py", label="Fire Stations", icon="🚒")
         st.page_link("pages/06_Police_Stations.py", label="Police Stations", icon="👮")
-        
-        st.markdown('<div class="sidebar-section-label">AI Intelligence</div>', unsafe_allow_html=True)
+
+        st.markdown(
+            '<div class="sidebar-section-label">AI Intelligence</div>',
+            unsafe_allow_html=True,
+        )
         st.page_link("pages/07_AI_Assistant.py", label="AI Assistant", icon="🤖")
 
+
 def render_page_styling():
-    st.markdown("""
+    st.markdown(
+        """
     <style>
         /* Global Theme - Deep Navy */
         .main { 
@@ -294,24 +313,30 @@ def render_page_styling():
             transform: scale(1.05);
         }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
+
 
 def render_language_selector():
     # Language selector at top right - Glassmorphism
     col1, col2, col3 = st.columns([7, 2, 1])
     with col2:
-        st.markdown("""
+        st.markdown(
+            """
         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; height: 100%;">
             <div style="background: rgba(255, 255, 255, 0.05); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.1);">
                 <span class="material-symbols-rounded" style="color: #94A3B8; font-size: 20px;">language</span>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
     with col3:
         st.selectbox(
             "Language",
             ["English", "हिन्दी", "తెలుగు"],
             label_visibility="collapsed",
             index=0,
-            key="language_selector"
+            key="language_selector",
         )

@@ -5,7 +5,11 @@ import streamlit as st
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
-from components.sidebar import render_sidebar, render_language_selector, render_page_styling
+from components.sidebar import (
+    render_sidebar,
+    render_language_selector,
+    render_page_styling,
+)
 
 st.set_page_config(page_title="Hospitals", layout="wide")
 
@@ -18,7 +22,8 @@ st.title("🏥 Hospitals")
 
 df = pd.read_csv("data/hospitals.csv")
 
-st.markdown(f"""
+st.markdown(
+    f"""
     <div class="hero-section" style="padding: 25px; margin-bottom: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
@@ -31,7 +36,9 @@ st.markdown(f"""
             </div>
         </div>
     </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Grid Layout for Cards
 cols = st.columns(2)
@@ -39,16 +46,17 @@ for index, row in df.iterrows():
     col_idx = index % 2
     with cols[col_idx]:
         nav_link = f"https://www.google.com/maps/dir/?api=1&destination={row['Latitude']},{row['Longitude']}"
-        st.markdown(f"""
+        st.markdown(
+            f"""
             <div class="resource-card">
-                <div class="resource-name">🏥 {row['Name']}</div>
+                <div class="resource-name">🏥 {row["Name"]}</div>
                 <div class="resource-info">
                     <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">location_on</span>
-                    <b>Area:</b> {row['Area']}
+                    <b>Area:</b> {row["Area"]}
                 </div>
                 <div class="resource-info">
                     <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">call</span>
-                    <b>Contact:</b> {row['Contact']}
+                    <b>Contact:</b> {row["Contact"]}
                 </div>
                 <a href="{nav_link}" target="_blank" class="nav-btn">
                     <span style="display: flex; align-items: center; gap: 8px;">
@@ -57,4 +65,6 @@ for index, row in df.iterrows():
                     </span>
                 </a>
             </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
