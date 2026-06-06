@@ -4,8 +4,12 @@ import sys
 import streamlit as st
 
 # Add src to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
-from components.sidebar import (
+SRC_PATH = os.path.join(os.path.dirname(__file__), "..", "src")
+
+if SRC_PATH not in sys.path:
+    sys.path.insert(0, SRC_PATH)
+
+from components.sidebar import (  # noqa: E402
     render_language_selector,
     render_page_styling,
     render_sidebar,
@@ -127,7 +131,7 @@ if st.button("Analyze Situation"):
                             margin-bottom: 5px;
                         ">AI ASSISTANT</div>
                         <div style="color: #F8FAFC; margin-bottom: 10px;">
-                            Situation analyzed. 
+                            Situation analyzed.
                             Recommended emergency service identified:
                         </div>
                         <div style="
