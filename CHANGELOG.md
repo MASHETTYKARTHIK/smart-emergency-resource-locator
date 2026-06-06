@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Resolved flake8 and pre-commit issues.
+- Fixed import ordering across Streamlit pages.
+- Improved sidebar import handling.
+- Updated formatting and lint compliance.
+
 ## [1.0.0] - 2026-05-31
 
 ### Added
