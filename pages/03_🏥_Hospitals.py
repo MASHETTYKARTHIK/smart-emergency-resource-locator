@@ -112,8 +112,9 @@ st.markdown(
 
 col1, col2 = st.columns([3, 1])
 with col1:
-    location_query = st.text_input("Enter location:", 
-                                    placeholder="e.g. Hyderabad, Gachibowli")
+    location_query = st.text_input(
+        "Enter location:", placeholder="e.g. Hyderabad, Gachibowli"
+    )
 with col2:
     radius_km = st.slider("Radius (km)", 1, 20, 5)
 
@@ -123,77 +124,78 @@ with col_a:
         st.link_button(
             "🌐 Open in Google Maps",
             f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}",
-            use_container_width=True
+            use_container_width=True,
         )
 with col_b:
-    search_btn = st.button("🚀 Find Nearby on Map", 
-                            use_container_width=True)
+    search_btn = st.button("🚀 Find Nearby on Map", use_container_width=True)
 
 if search_btn and location_query:
     with st.spinner("Fetching live data..."):
         try:
             import requests
-            
+
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
-            nom_params = {
-                "q": location_query,
-                "format": "json",
-                "limit": 1
-            }
+            nom_params = {"q": location_query, "format": "json", "limit": 1}
             nom_headers = {"User-Agent": "SmartEmergencyAllocator/1.0"}
-            nom_resp = requests.get(nom_url, params=nom_params, 
-                                     headers=nom_headers)
+            nom_resp = requests.get(nom_url, params=nom_params, headers=nom_headers)
             nom_data = nom_resp.json()
-            
+
             if nom_data:
                 lat = float(nom_data[0]["lat"])
                 lng = float(nom_data[0]["lon"])
-                
+
                 overpass_url = "https://overpass-api.de/api/interpreter"
                 overpass_query = f"""
                 [out:json];
                 (
-                  node["amenity"="hospital"](around:{radius_km*1000},{lat},{lng});
-                  way["amenity"="hospital"](around:{radius_km*1000},{lat},{lng});
+                  node["amenity"="hospital"](around:{radius_km * 1000},{lat},{lng});
+                  way["amenity"="hospital"](around:{radius_km * 1000},{lat},{lng});
                 );
                 out center;
                 """
-                
-                resp = requests.post(overpass_url, 
-                                      data=overpass_query,
-                                      headers=nom_headers)
+
+                resp = requests.post(
+                    overpass_url, data=overpass_query, headers=nom_headers
+                )
                 data = resp.json()
                 elements = data.get("elements", [])
-                
+
                 if elements:
                     results = []
                     for el in elements[:10]:
                         tags = el.get("tags", {})
                         el_lat = el.get("lat") or el.get("center", {}).get("lat")
                         el_lng = el.get("lon") or el.get("center", {}).get("lon")
-                        results.append({
-                            "Name": tags.get("name", "Unknown"),
-                            "Address": tags.get("addr:full", 
-                                       tags.get("addr:street", "Location details unavailable")),
-                            "Latitude": el_lat,
-                            "Longitude": el_lng
-                        })
-                    
+                        results.append(
+                            {
+                                "Name": tags.get("name", "Unknown"),
+                                "Address": tags.get(
+                                    "addr:full",
+                                    tags.get(
+                                        "addr:street", "Location details unavailable"
+                                    ),
+                                ),
+                                "Latitude": el_lat,
+                                "Longitude": el_lng,
+                            }
+                        )
+
                     st.success(f"Found {len(results)} results near {location_query}")
-                    
+
                     # Results Grid with Card Style
                     cols = st.columns(2)
                     for i, r in enumerate(results):
                         col_idx = i % 2
                         with cols[col_idx]:
                             nav_link = f"https://www.google.com/maps/dir/?api=1&destination={r['Latitude']},{r['Longitude']}"
-                            st.markdown(f"""
+                            st.markdown(
+                                f"""
                                 <div class="resource-card">
-                                    <div class="resource-name">🏥 {r['Name']}</div>
+                                    <div class="resource-name">🏥 {r["Name"]}</div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">location_on</span>
-                                        <b>Address:</b> {r['Address']}
+                                        <b>Address:</b> {r["Address"]}
                                     </div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">directions_run</span>
@@ -206,24 +208,33 @@ if search_btn and location_query:
                                         </span>
                                     </a>
                                 </div>
-                                """, unsafe_allow_html=True)
-                    
+                                """,
+                                unsafe_allow_html=True,
+                            )
+
                     import folium
                     from streamlit_folium import st_folium
-                    m = folium.Map(location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter")
-                    folium.Marker([lat, lng], 
-                                   popup="Search Location",
-                                   icon=folium.Icon(color="red", icon="search")).add_to(m)
+
+                    m = folium.Map(
+                        location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter"
+                    )
+                    folium.Marker(
+                        [lat, lng],
+                        popup="Search Location",
+                        icon=folium.Icon(color="red", icon="search"),
+                    ).add_to(m)
                     for r in results:
-                        if r['Latitude'] and r['Longitude']:
+                        if r["Latitude"] and r["Longitude"]:
                             folium.Marker(
-                                [r['Latitude'], r['Longitude']],
-                                popup=r['Name'],
-                                icon=folium.Icon(color="blue", icon="info-sign")
+                                [r["Latitude"], r["Longitude"]],
+                                popup=r["Name"],
+                                icon=folium.Icon(color="blue", icon="info-sign"),
                             ).add_to(m)
                     st_folium(m, height=400, use_container_width=True)
                 else:
-                    st.warning("No results found. Try a different location or increase radius.")
+                    st.warning(
+                        "No results found. Try a different location or increase radius."
+                    )
             else:
                 st.error("Location not found. Please try again.")
         except Exception as e:

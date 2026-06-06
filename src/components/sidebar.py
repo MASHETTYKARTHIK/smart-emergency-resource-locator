@@ -186,7 +186,9 @@ def render_sidebar():
         st.page_link("pages/03_🏥_Hospitals.py", label="Hospitals", icon="🏥")
         st.page_link("pages/04_Blood_Banks.py", label="Blood Banks", icon="🩸")
         st.page_link("pages/05_🚒_Fire_Stations.py", label="Fire Stations", icon="🚒")
-        st.page_link("pages/06_👮_Police_Stations.py", label="Police Stations", icon="👮")
+        st.page_link(
+            "pages/06_👮_Police_Stations.py", label="Police Stations", icon="👮"
+        )
 
         st.markdown(
             '<div class="sidebar-section-label">AI Intelligence</div>',
