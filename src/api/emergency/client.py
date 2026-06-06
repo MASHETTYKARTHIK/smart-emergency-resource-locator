@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, cast
+from typing import Any, cast
 
 import requests
 
@@ -18,7 +18,7 @@ class EmergencyClient:
 
     def search_resources(
         self, lat: float, lon: float, resource_type: str, radius: int = 5000
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Search for emergency resources using Overpass API.
 
@@ -54,14 +54,14 @@ class EmergencyClient:
                 self.OVERPASS_URL, data={"data": overpass_query}, timeout=self.TIMEOUT
             )
             response.raise_for_status()
-            return cast(Dict[str, Any], response.json())
+            return cast(dict[str, Any], response.json())
         except requests.RequestException as e:
             logger.error(f"Overpass API error: {e}")
             raise RuntimeError("Failed to fetch resources from Overpass API") from e
 
     def get_route(
         self, start_lat: float, start_lon: float, end_lat: float, end_lon: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Fetch navigation route from OSRM."""
         coords = f"{start_lon},{start_lat};{end_lon},{end_lat}"
         url = f"{self.OSRM_URL}{coords}?overview=full&geometries=polyline"
@@ -69,7 +69,7 @@ class EmergencyClient:
         try:
             response = self.session.get(url, timeout=self.TIMEOUT)
             response.raise_for_status()
-            return cast(Dict[str, Any], response.json())
+            return cast(dict[str, Any], response.json())
         except requests.RequestException as e:
             logger.error(f"OSRM API error: {e}")
             raise RuntimeError("Failed to fetch route from OSRM API") from e

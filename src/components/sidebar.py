@@ -2,29 +2,39 @@ import streamlit as st
 
 
 def render_sidebar():
+    # Google Fonts URLs
+    INTER_FONT = (
+        "https://fonts.googleapis.com/css2?"
+        "family=Inter:wght@400;500;600;700&display=swap"
+    )
+    MATERIAL_ICONS = (
+        "https://fonts.googleapis.com/css2?"
+        "family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+    )
+
     # --- PREMIUM CSS STYLING ---
     st.markdown(
-        """
+        f"""
     <style>
         /* Import Premium Fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0');
-        
+        @import url('{INTER_FONT}');
+        @import url('{MATERIAL_ICONS}');
+
         /* Sidebar Styling - Frosted Glass */
-        [data-testid="stSidebar"] {
+        [data-testid="stSidebar"] {{
             background-color: rgba(15, 23, 42, 0.95) !important;
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        }}
 
         /* Hide default navigation */
-        [data-testid="stSidebarNav"] {
+        [data-testid="stSidebarNav"] {{
             display: none;
-        }
+        }}
 
         /* Mission Control Card - Glassmorphism */
-        .mission-control-card {
+        .mission-control-card {{
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -36,75 +46,75 @@ def render_sidebar():
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
-        
-        .mission-control-card:hover {
+        }}
+
+        .mission-control-card:hover {{
             border-color: rgba(255, 75, 75, 0.3);
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
+        }}
 
-        .mission-control-card::after {
+        .mission-control-card::after {{
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; height: 100%;
             background: linear-gradient(
-                135deg, 
-                rgba(255, 75, 75, 0.1) 0%, 
-                transparent 50%, 
+                135deg,
+                rgba(255, 75, 75, 0.1) 0%,
+                transparent 50%,
                 rgba(255, 75, 75, 0.05) 100%
             );
             opacity: 0.4;
             z-index: 0;
             animation: pulse-gradient 8s infinite alternate;
-        }
+        }}
 
-        @keyframes pulse-gradient {
-            0% { opacity: 0.2; }
-            100% { opacity: 0.5; }
-        }
+        @keyframes pulse-gradient {{
+            0% {{ opacity: 0.2; }}
+            100% {{ opacity: 0.5; }}
+        }}
 
         /* Navigation Links - Rounded Pills */
-        .stPageLink {
+        .stPageLink {{
             border-radius: 12px !important;
             margin-bottom: 6px !important;
             transition: all 0.25s ease !important;
             border: 1px solid transparent !important;
             padding: 8px 14px !important;
-        }
+        }}
 
-        .stPageLink:hover {
+        .stPageLink:hover {{
             background-color: rgba(255, 255, 255, 0.08) !important;
             transform: translateX(6px) !important;
             border-color: rgba(255, 255, 255, 0.1) !important;
-        }
-        
+        }}
+
         /* Active Link Gradient Highlight */
-        [data-testid="stPageLinkActive"] {
+        [data-testid="stPageLinkActive"] {{
             background: linear-gradient(
-                90deg, 
-                rgba(255, 75, 75, 0.2) 0%, 
+                90deg,
+                rgba(255, 75, 75, 0.2) 0%,
                 rgba(255, 75, 75, 0.05) 100%
             ) !important;
             border-left: 4px solid #FF4B4B !important;
             color: #FF4B4B !important;
             font-weight: 700 !important;
             box-shadow: 0 4px 15px rgba(255, 75, 75, 0.1);
-        }
-        
-        [data-testid="stPageLinkActive"] span {
+        }}
+
+        [data-testid="stPageLinkActive"] span {{
             color: #FF4B4B !important;
-        }
+        }}
 
         /* Section Separators */
-        .sidebar-section-label {
+        .sidebar-section-label {{
             font-size: 0.7rem;
             font-weight: 700;
             color: #64748B;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin: 20px 0 10px 8px;
-        }
+        }}
     </style>
     """,
         unsafe_allow_html=True,
@@ -114,17 +124,17 @@ def render_sidebar():
         # App Logo & Branding - Clean "RESOURCES"
         st.markdown(
             """
-        <div style="display: flex; align-items: center; gap: 12px; 
+        <div style="display: flex; align-items: center; gap: 12px;
                     margin-bottom: 30px; padding: 10px 10px;">
-            <div style="background: linear-gradient(135deg, #FF4B4B 0%, #D32F2F 100%); 
-                        width: 38px; height: 38px; border-radius: 10px; 
-                        display: flex; align-items: center; justify-content: center; 
+            <div style="background: linear-gradient(135deg, #FF4B4B 0%, #D32F2F 100%);
+                        width: 38px; height: 38px; border-radius: 10px;
+                        display: flex; align-items: center; justify-content: center;
                         box-shadow: 0 4px 12px rgba(255, 75, 75, 0.3);">
-                <span class="material-symbols-rounded" 
+                <span class="material-symbols-rounded"
                       style="color: white; font-size: 22px;">emergency</span>
             </div>
             <div>
-                <div style="font-size: 1.2rem; font-weight: 700; color: white; 
+                <div style="font-size: 1.2rem; font-weight: 700; color: white;
                             letter-spacing: 1px;">RESOURCES</div>
             </div>
         </div>
@@ -137,23 +147,23 @@ def render_sidebar():
             """
         <div class="mission-control-card">
             <div style="position: relative; z-index: 1;">
-                <div style="display: flex; align-items: center; gap: 10px; 
+                <div style="display: flex; align-items: center; gap: 10px;
                             margin-bottom: 12px;">
-                    <div style="background: rgba(255, 75, 75, 0.15); width: 28px; 
-                                height: 28px; border-radius: 6px; display: flex; 
+                    <div style="background: rgba(255, 75, 75, 0.15); width: 28px;
+                                height: 28px; border-radius: 6px; display: flex;
                                 align-items: center; justify-content: center;">
-                        <span class="material-symbols-rounded" 
+                        <span class="material-symbols-rounded"
                               style="color: #FF4B4B; font-size: 16px;">radar</span>
                     </div>
-                    <span style="font-weight: 600; color: #F8FAFC; 
+                    <span style="font-weight: 600; color: #F8FAFC;
                                  font-size: 0.9rem;">Mission Control</span>
-                    <div style="margin-left: auto; width: 8px; height: 8px; 
-                                background: #10B981; border-radius: 50%; 
+                    <div style="margin-left: auto; width: 8px; height: 8px;
+                                background: #10B981; border-radius: 50%;
                                 box-shadow: 0 0 8px #10B981;"></div>
                 </div>
-                <p style="color: #94A3B8; font-size: 0.75rem; 
+                <p style="color: #94A3B8; font-size: 0.75rem;
                           line-height: 1.4; margin: 0;">
-                    Real-time monitoring active. System Status: 
+                    Real-time monitoring active. System Status:
                     <span style="color: #10B981; font-weight: 600;">Optimal</span>
                 </p>
             </div>
@@ -190,8 +200,8 @@ def render_page_styling():
         """
     <style>
         /* Global Theme - Deep Navy */
-        .main { 
-            background-color: #0B1120 !important; 
+        .main {
+            background-color: #0B1120 !important;
             background-image: radial-gradient(
                 circle at top right, rgba(255, 75, 75, 0.05), transparent 400px
             ),
@@ -199,7 +209,7 @@ def render_page_styling():
                 circle at bottom left, rgba(30, 64, 175, 0.1), transparent 400px
             );
         }
-        
+
         /* Glassmorphism Metrics */
         .stMetric {
             background-color: rgba(30, 41, 59, 0.4) !important;
@@ -214,7 +224,7 @@ def render_page_styling():
             transform: translateY(-4px);
             border-color: rgba(255, 75, 75, 0.2);
         }
-        
+
         div[data-testid="metric-container"] {
             background-color: transparent !important;
             border: none !important;
@@ -244,7 +254,7 @@ def render_page_styling():
             letter-spacing: -1.5px;
         }
         .hero-subtitle { color: #94A3B8; font-size: 1.15rem; font-weight: 400; }
-        
+
         /* Glassmorphism Cards */
         .resource-card {
             background-color: rgba(30, 41, 59, 0.4) !important;
@@ -260,7 +270,7 @@ def render_page_styling():
         .resource-card:hover {
             border-color: rgba(255, 75, 75, 0.3);
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(255, 75, 75, 0.12), 
+            box-shadow: 0 20px 40px rgba(255, 75, 75, 0.12),
                         0 0 0 1px rgba(255, 75, 75, 0.1);
         }
         .resource-name {
@@ -353,13 +363,13 @@ def render_language_selector():
     with col2:
         st.markdown(
             """
-        <div style="display: flex; align-items: center; 
+        <div style="display: flex; align-items: center;
                     justify-content: flex-end; gap: 10px; height: 100%;">
-            <div style="background: rgba(255, 255, 255, 0.05); width: 34px; 
-                        height: 34px; border-radius: 10px; display: flex; 
-                        align-items: center; justify-content: center; 
+            <div style="background: rgba(255, 255, 255, 0.05); width: 34px;
+                        height: 34px; border-radius: 10px; display: flex;
+                        align-items: center; justify-content: center;
                         border: 1px solid rgba(255, 255, 255, 0.1);">
-                <span class="material-symbols-rounded" 
+                <span class="material-symbols-rounded"
                       style="color: #94A3B8; font-size: 20px;">language</span>
             </div>
         </div>

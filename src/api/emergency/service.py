@@ -1,6 +1,6 @@
 import math
 import os
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, cast
 
 import pandas as pd
 
@@ -10,7 +10,7 @@ from .client import EmergencyClient
 class EmergencyService:
     """Service to handle emergency resource selection and navigation logic."""
 
-    def __init__(self, client: Optional[EmergencyClient] = None) -> None:
+    def __init__(self, client: EmergencyClient | None = None) -> None:
         self.client = client or EmergencyClient()
         self.data_path = "data"
 
@@ -31,7 +31,7 @@ class EmergencyService:
 
     def get_nearest_resource(
         self, lat: float, lon: float, resource_type: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Find the nearest resource and get navigation details."""
         try:
             data = self.client.search_resources(lat, lon, resource_type)
@@ -65,8 +65,8 @@ class EmergencyService:
         return nearest
 
     def _process_elements(
-        self, lat: float, lon: float, resource_type: str, elements: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, lat: float, lon: float, resource_type: str, elements: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         nearest = None
         min_dist = float("inf")
 
@@ -93,7 +93,7 @@ class EmergencyService:
 
     def _fallback_to_local(
         self, lat: float, lon: float, resource_type: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Search in local CSV files if remote API is unavailable."""
         file_map = {
             "hospital": "hospitals.csv",
