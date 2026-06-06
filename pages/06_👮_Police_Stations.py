@@ -114,58 +114,90 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-location_query = st.text_input("Enter location:", placeholder="e.g., Police Station Hyderabad")
-maps_url = f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}"
-if location_query:
-    st.link_button("🌐 Open in Google Maps", url=maps_url)
+col1, col2 = st.columns([3, 1])
+with col1:
+    location_query = st.text_input("Enter location:", 
+                                    placeholder="e.g. Hyderabad, Gachibowli")
+with col2:
+    radius_km = st.slider("Radius (km)", 1, 20, 5)
 
-if st.button("🚀 Find Nearby on Map"):
-    if not location_query:
-        st.error("Please enter a location first!")
-    else:
-        with st.spinner("Fetching data from OpenStreetMap..."):
-            overpass_url = "https://overpass-api.de/api/interpreter"
-            query = """
-            [out:json];
-            (
-              node["amenity"="police"](around:5000, 17.3850, 78.4867);
-              way["amenity"="police"](around:5000, 17.3850, 78.4867);
-            );
-            out;
-            """
-            try:
-                headers = {
-                    "User-Agent": "SmartEmergencyAllocator/1.0 (contact@example.com)"
-                }
-                response = requests.get(overpass_url, params={'data': query}, headers=headers)
-                response.raise_for_status()
-                data = response.json()
-                if not data['elements']:
-                    st.warning("No results found nearby.")
-                else:
+col_a, col_b = st.columns(2)
+with col_a:
+    if location_query:
+        st.link_button(
+            "🌐 Open in Google Maps",
+            f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}",
+            use_container_width=True
+        )
+with col_b:
+    search_btn = st.button("🚀 Find Nearby on Map", 
+                            use_container_width=True)
+
+if search_btn and location_query:
+    with st.spinner("Fetching live data..."):
+        try:
+            import requests
+            
+            # Get coordinates from Nominatim
+            nom_url = "https://nominatim.openstreetmap.org/search"
+            nom_params = {
+                "q": location_query,
+                "format": "json",
+                "limit": 1
+            }
+            nom_headers = {"User-Agent": "SmartEmergencyAllocator/1.0"}
+            nom_resp = requests.get(nom_url, params=nom_params, 
+                                     headers=nom_headers)
+            nom_data = nom_resp.json()
+            
+            if nom_data:
+                lat = float(nom_data[0]["lat"])
+                lng = float(nom_data[0]["lon"])
+                
+                overpass_url = "https://overpass-api.de/api/interpreter"
+                overpass_query = f"""
+                [out:json];
+                (
+                  node["amenity"="police"](around:{radius_km*1000},{lat},{lng});
+                  way["amenity"="police"](around:{radius_km*1000},{lat},{lng});
+                );
+                out center;
+                """
+                
+                resp = requests.post(overpass_url, 
+                                      data=overpass_query,
+                                      headers=nom_headers)
+                data = resp.json()
+                elements = data.get("elements", [])
+                
+                if elements:
                     results = []
-                    for element in data['elements']:
-                        name = element.get('tags', {}).get('name', 'Unknown')
-                        lat = element.get('lat', 0)
-                        lon = element.get('lon', 0)
-                        addr = element.get('tags', {}).get('addr:full', element.get('tags', {}).get('addr:street', 'Location details unavailable'))
-                        results.append({'Name': name, 'Latitude': lat, 'Longitude': lon, 'Address': addr})
+                    for el in elements[:10]:
+                        tags = el.get("tags", {})
+                        el_lat = el.get("lat") or el.get("center", {}).get("lat")
+                        el_lng = el.get("lon") or el.get("center", {}).get("lon")
+                        results.append({
+                            "Name": tags.get("name", "Unknown"),
+                            "Address": tags.get("addr:full", 
+                                       tags.get("addr:street", "Location details unavailable")),
+                            "Latitude": el_lat,
+                            "Longitude": el_lng
+                        })
                     
-                    df_res = pd.DataFrame(results)
+                    st.success(f"Found {len(results)} results near {location_query}")
                     
-                    # Results Grid
+                    # Results Grid with Card Style
                     cols = st.columns(2)
-                    for i, (_, row) in enumerate(df_res.iterrows()):
+                    for i, r in enumerate(results):
                         col_idx = i % 2
                         with cols[col_idx]:
-                            nav_link = f"https://www.google.com/maps/dir/?api=1&destination={row['Latitude']},{row['Longitude']}"
-                            st.markdown(
-                                f"""
+                            nav_link = f"https://www.google.com/maps/dir/?api=1&destination={r['Latitude']},{r['Longitude']}"
+                            st.markdown(f"""
                                 <div class="resource-card">
-                                    <div class="resource-name">👮 {row["Name"]}</div>
+                                    <div class="resource-name">👮 {r['Name']}</div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">location_on</span>
-                                        <b>Address:</b> {row["Address"]}
+                                        <b>Address:</b> {r['Address']}
                                     </div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">directions_run</span>
@@ -178,13 +210,25 @@ if st.button("🚀 Find Nearby on Map"):
                                         </span>
                                     </a>
                                 </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
-
-                    m = folium.Map(location=[17.3850, 78.4867], zoom_start=13, tiles="CartoDB dark_matter")
-                    for _, row in df_res.iterrows():
-                        folium.Marker([row['Latitude'], row['Longitude']], popup=row['Name']).add_to(m)
-                    st_folium(m, width="100%", height=400)
-            except Exception as e:
-                st.error(f"Error fetching data: {e}")
+                                """, unsafe_allow_html=True)
+                    
+                    import folium
+                    from streamlit_folium import st_folium
+                    m = folium.Map(location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter")
+                    folium.Marker([lat, lng], 
+                                   popup="Search Location",
+                                   icon=folium.Icon(color="red", icon="search")).add_to(m)
+                    for r in results:
+                        if r['Latitude'] and r['Longitude']:
+                            folium.Marker(
+                                [r['Latitude'], r['Longitude']],
+                                popup=r['Name'],
+                                icon=folium.Icon(color="blue", icon="info-sign")
+                            ).add_to(m)
+                    st_folium(m, height=400, use_container_width=True)
+                else:
+                    st.warning("No results found. Try a different location or increase radius.")
+            else:
+                st.error("Location not found. Please try again.")
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
