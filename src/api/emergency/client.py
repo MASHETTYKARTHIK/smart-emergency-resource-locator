@@ -10,7 +10,7 @@ class EmergencyClient:
     """Client for external emergency resource and navigation services."""
 
     OVERPASS_URL = "https://overpass-api.de/api/interpreter"
-    OSRM_URL = "http://router.project-osrm.org/route/v1/driving/"
+    OSRM_URL = "https://router.project-osrm.org/route/v1/driving/"
     TIMEOUT = 10.0  # seconds
 
     def __init__(self) -> None:

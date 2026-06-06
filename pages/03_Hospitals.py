@@ -58,8 +58,8 @@ st.markdown(
 
 # Grid Layout for Cards
 cols = st.columns(2)
-for index, row in df.iterrows():
-    col_idx = index % 2
+for i, (_index, row) in enumerate(df.iterrows()):
+    col_idx = i % 2
     with cols[col_idx]:
         nav_link = (
             f"https://www.google.com/maps/dir/?api=1&destination="
