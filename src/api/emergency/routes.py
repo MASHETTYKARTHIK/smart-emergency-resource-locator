@@ -21,15 +21,19 @@ def get_nearest():
         resource_type = request.args.get("type")
 
         if lat is None or lon is None or not resource_type:
-            return jsonify(
-                {"error": "Missing required parameters: lat, lon, type"}
-            ), 400
+            return (
+                jsonify({"error": "Missing required parameters: lat, lon, type"}),
+                400,
+            )
 
         valid_types = ["hospital", "police", "fire_station", "blood_bank"]
         if resource_type not in valid_types:
-            return jsonify(
-                {"error": f"Invalid type. Must be one of: {', '.join(valid_types)}"}
-            ), 400
+            return (
+                jsonify(
+                    {"error": f"Invalid type. Must be one of: {', '.join(valid_types)}"}
+                ),
+                400,
+            )
 
         result = service.get_nearest_resource(lat, lon, resource_type)
         return jsonify(result), 200

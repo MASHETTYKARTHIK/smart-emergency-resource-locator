@@ -79,6 +79,36 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown("### 🗺️ Open in Google Maps")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.link_button(
+        "🏥 Hospitals Near Me",
+        "https://www.google.com/maps/search/hospitals+near+me",
+        use_container_width=True,
+    )
+with col2:
+    st.link_button(
+        "💉 Blood Banks Near Me",
+        "https://www.google.com/maps/search/blood+banks+near+me",
+        use_container_width=True,
+    )
+with col3:
+    st.link_button(
+        "🚒 Fire Stations Near Me",
+        "https://www.google.com/maps/search/fire+stations+near+me",
+        use_container_width=True,
+    )
+with col4:
+    st.link_button(
+        "👮 Police Stations Near Me",
+        "https://www.google.com/maps/search/police+stations+near+me",
+        use_container_width=True,
+    )
+
+st.divider()
 
 # --- SEARCH PANEL ---
 col1, col2, col3 = st.columns([2, 2, 1])
@@ -147,11 +177,11 @@ if search_btn:
                 <div class="resource-info">
                     <span class="icon">📞</span> <b>Contact:</b> {row["Contact"]}
                 </div>
-                <a href="{nav_link}" target="_blank" class="nav-btn">🧭 Navigate</a>
             </div>
             """,
             unsafe_allow_html=True,
         )
+        st.link_button("🧭 Navigate", nav_link, type="primary")
 
 # --- FOOTER ---
 st.markdown(

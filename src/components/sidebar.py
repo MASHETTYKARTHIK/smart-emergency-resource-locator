@@ -178,15 +178,17 @@ def render_sidebar():
         )
         st.page_link("app.py", label="Home", icon="🏠")
         st.page_link("pages/01_Dashboard.py", label="Dashboard", icon="📊")
-        st.page_link("pages/02_Resource_Map.py", label="Resource Map", icon="🗺️")
+        st.page_link("pages/02_🗺️_Resource_Map.py", label="Resource Map", icon="🗺️")
 
         st.markdown(
             '<div class="sidebar-section-label">Resources</div>', unsafe_allow_html=True
         )
-        st.page_link("pages/03_Hospitals.py", label="Hospitals", icon="🏥")
+        st.page_link("pages/03_🏥_Hospitals.py", label="Hospitals", icon="🏥")
         st.page_link("pages/04_Blood_Banks.py", label="Blood Banks", icon="🩸")
-        st.page_link("pages/05_Fire_Stations.py", label="Fire Stations", icon="🚒")
-        st.page_link("pages/06_Police_Stations.py", label="Police Stations", icon="👮")
+        st.page_link("pages/05_🚒_Fire_Stations.py", label="Fire Stations", icon="🚒")
+        st.page_link(
+            "pages/06_👮_Police_Stations.py", label="Police Stations", icon="👮"
+        )
 
         st.markdown(
             '<div class="sidebar-section-label">AI Intelligence</div>',

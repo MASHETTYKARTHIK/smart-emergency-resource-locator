@@ -11,7 +11,7 @@ def test_haversine_distance():
     lat1, lon1 = 17.4401, 78.3489  # Gachibowli
     lat2, lon2 = 17.4500, 78.3810  # HITEC City
     distance = haversine(lat1, lon1, lat2, lon2)
-    assert 3.0 < distance < 5.0
+    assert 3.0 < distance < 5.0  # nosec
 
 
 def test_data_files_exist():
@@ -23,7 +23,7 @@ def test_data_files_exist():
         "data/firestations.csv",
     ]
     for file_path in data_files:
-        assert os.path.exists(file_path), f"{file_path} is missing"
+        assert os.path.exists(file_path), f"{file_path} is missing"  # nosec
 
 
 def test_csv_structure():
@@ -40,7 +40,7 @@ def test_csv_structure():
         df = pd.read_csv(file_path)
         assert all(col in df.columns for col in expected_columns), (
             f"Incorrect columns in {file_path}"
-        )
+        )  # nosec
 
 
 def test_area_consistency():
@@ -52,7 +52,7 @@ def test_area_consistency():
     areas_found = df["Area"].unique()
     assert any(area in valid_areas for area in areas_found), (
         "No valid areas found in hospitals.csv"
-    )
+    )  # nosec
 
 
 def test_latitude_longitude_ranges():
@@ -69,7 +69,7 @@ def test_latitude_longitude_ranges():
         df = pd.read_csv(file_path)
         assert df["Latitude"].between(17.0, 18.0).all(), (
             f"Invalid latitude in {file_path}"
-        )
+        )  # nosec
         assert df["Longitude"].between(78.0, 79.0).all(), (
             f"Invalid longitude in {file_path}"
-        )
+        )  # nosec
