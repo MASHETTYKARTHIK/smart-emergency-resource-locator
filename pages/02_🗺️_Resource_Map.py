@@ -9,6 +9,7 @@ from streamlit_folium import st_folium
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+
 from components.sidebar import (  # noqa: E402
     render_language_selector,
     render_page_styling,
@@ -38,22 +39,38 @@ st.markdown(
                 justify-content: center;
                 border: 1px solid rgba(255, 75, 75, 0.2);
             ">
-                <span class="material-symbols-rounded"
-                      style="color: #FF4B4B; font-size: 30px;">
+                <span
+                    class="material-symbols-rounded"
+                    style="color: #FF4B4B; font-size: 30px;"
+                >
                     map
                 </span>
             </div>
+
             <div>
-                <div style="color: #F8FAFC; font-size: 1.5rem; font-weight: 700;">
+                <div
+                    style="
+                        color: #F8FAFC;
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                    "
+                >
                     Spatial Intelligence
                 </div>
-                <div style="color: #94A3B8; font-size: 0.9rem;">
-                    Interactive visualization of emergency assets across Hyderabad.
+
+                <div
+                    style="
+                        color: #94A3B8;
+                        font-size: 0.9rem;
+                    "
+                >
+                    Interactive visualization of emergency assets
+                    across Hyderabad.
                 </div>
             </div>
         </div>
     </div>
-""",
+    """,
     unsafe_allow_html=True,
 )
 
@@ -76,6 +93,7 @@ st.markdown(
 # Filter Panel
 with st.container():
     col1, col2 = st.columns([1, 3])
+
     with col1:
         st.markdown(
             """
@@ -84,25 +102,36 @@ with st.container():
                 color: #94A3B8;
                 font-weight: 600;
                 font-size: 0.8rem;
-            ">FILTER VIEW</div>
+            ">
+                FILTER VIEW
+            </div>
             """,
             unsafe_allow_html=True,
         )
+
         resource = st.selectbox(
             "Select Asset Type",
-            ["Hospitals", "Blood Banks", "Police Stations", "Fire Stations"],
+            [
+                "Hospitals",
+                "Blood Banks",
+                "Police Stations",
+                "Fire Stations",
+            ],
             label_visibility="collapsed",
         )
 
 if resource == "Hospitals":
     df = pd.read_csv("data/hospitals.csv")
     color = "red"
+
 elif resource == "Blood Banks":
     df = pd.read_csv("data/bloodbanks.csv")
     color = "darkred"
+
 elif resource == "Police Stations":
     df = pd.read_csv("data/policestations.csv")
     color = "blue"
+
 else:
     df = pd.read_csv("data/firestations.csv")
     color = "orange"
@@ -120,6 +149,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
 m = folium.Map(
     location=[17.44, 78.38],
     zoom_start=11,
@@ -139,39 +169,56 @@ for _, row in df.iterrows():
     ).add_to(m)
 
 st_folium(m, width="100%", height=600)
+
 st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
+
 st.markdown(
     """
-    <div style="border-left: 5px solid #FF4B4B; padding-left: 15px;
-                margin: 30px 0 20px 0;">
-        <h3 style="color: #F8FAFC; margin: 0;">🔍 Search Live Location \
-on Google Maps</h3>
+    <div
+        style="
+            border-left: 5px solid #FF4B4B;
+            padding-left: 15px;
+            margin: 30px 0 20px 0;
+        "
+    >
+        <h3 style="color: #F8FAFC; margin: 0;">
+            🔍 Search Live Location on Google Maps
+        </h3>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
 col1, col2 = st.columns([3, 1])
+
 with col1:
     location_query = st.text_input(
-        "Enter location:", placeholder="e.g. Hyderabad, Gachibowli"
+        "Enter location:",
+        placeholder="e.g. Hyderabad, Gachibowli",
     )
+
 with col2:
     radius_km = st.slider("Radius (km)", 1, 20, 5)
 
 col_a, col_b = st.columns(2)
+
 with col_a:
     if location_query:
         st.link_button(
             "🌐 Open in Google Maps",
-            f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}",
+            (f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}"),
             use_container_width=True,
         )
-with col_b:
-    search_btn = st.button("🚀 Find Nearby on Map", use_container_width=True)
 
+with col_b:
+    search_btn = st.button(
+        "🚀 Find Nearby on Map",
+        use_container_width=True,
+    )
+
+# Session state setup
 if "resource_map_search_results" not in st.session_state:
     st.session_state.resource_map_search_results = None
 
@@ -185,62 +232,112 @@ if "resource_map_search_lng" not in st.session_state:
     st.session_state.resource_map_search_lng = None
 
 
-def render_resource_map_results(results, location_query, lat, lng):
-    st.success(f"Found {len(results)} results near {location_query}")
+def render_resource_map_results(results, location_name, lat, lng):
+    st.success(f"Found {len(results)} results near {location_name}")
 
-    emoji_map = {"hospital": "🏥", "fire_station": "🚒", "police": "👮"}
+    emoji_map = {
+        "hospital": "🏥",
+        "fire_station": "🚒",
+        "police": "👮",
+    }
+
     cols = st.columns(2)
+
     for i, r in enumerate(results):
         col_idx = i % 2
+
         with cols[col_idx]:
             emoji = emoji_map.get(r["Amenity"], "📍")
+
             nav_link = (
-                f"https://www.google.com/maps/dir/?api=1&destination="
+                "https://www.google.com/maps/dir/?api=1&destination="
                 f"{r['Latitude']},{r['Longitude']}"
             )
+
             st.markdown(
                 f"""
                 <div class="resource-card">
-                    <div class="resource-name">{emoji} {r["Name"]}</div>
+
+                    <div class="resource-name">
+                        {emoji} {r["Name"]}
+                    </div>
+
                     <div class="resource-info">
-                        <span class="material-symbols-rounded resource-icon">
+                        <span
+                            class="material-symbols-rounded resource-icon"
+                        >
                             location_on
                         </span>
+
                         <b>Address:</b> {r["Address"]}
                     </div>
+
                     <div class="resource-info">
-                        <span class="material-symbols-rounded resource-icon">
+                        <span
+                            class="material-symbols-rounded resource-icon"
+                        >
                             directions_run
                         </span>
+
                         <b>Distance:</b> Live Tracking Active
                     </div>
-                    <a href="{nav_link}" target="_blank" class="nav-btn">
-                        <span style="display: flex; align-items: center; gap: 8px;">
-                            <span class="material-symbols-rounded nav-icon">
+
+                    <a
+                        href="{nav_link}"
+                        target="_blank"
+                        class="nav-btn"
+                    >
+
+                        <span
+                            style="
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
+                            "
+                        >
+
+                            <span
+                                class="material-symbols-rounded nav-icon"
+                            >
                                 directions
                             </span>
+
                             Navigate Now
+
                         </span>
+
                     </a>
+
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
-    m = folium.Map(location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter")
+    live_map = folium.Map(
+        location=[lat, lng],
+        zoom_start=13,
+        tiles="CartoDB dark_matter",
+    )
+
     folium.Marker(
         [lat, lng],
         popup="Search Location",
         icon=folium.Icon(color="red", icon="search"),
-    ).add_to(m)
+    ).add_to(live_map)
+
     for r in results:
         if r["Latitude"] and r["Longitude"]:
             folium.Marker(
                 [r["Latitude"], r["Longitude"]],
                 popup=f"{r['Name']} ({r['Amenity']})",
                 icon=folium.Icon(color="blue", icon="info-sign"),
-            ).add_to(m)
-    st_folium(m, height=400, use_container_width=True)
+            ).add_to(live_map)
+
+    st_folium(
+        live_map,
+        height=400,
+        use_container_width=True,
+    )
 
 
 if search_btn and location_query:
@@ -248,15 +345,22 @@ if search_btn and location_query:
         try:
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
+
             nom_params: dict[str, str | int] = {
                 "q": location_query,
                 "format": "json",
                 "limit": 1,
             }
+
             nom_headers = {"User-Agent": "SmartEmergencyAllocator/1.0"}
+
             nom_resp = requests.get(
-                nom_url, params=nom_params, headers=nom_headers, timeout=10
+                nom_url,
+                params=nom_params,
+                headers=nom_headers,
+                timeout=10,
             )
+
             nom_data = nom_resp.json()
 
             if nom_data:
@@ -264,8 +368,11 @@ if search_btn and location_query:
                 lng = float(nom_data[0]["lon"])
 
                 overpass_url = "https://overpass-api.de/api/interpreter"
+
                 amenities = "hospital|fire_station|police"
+
                 around = f"around:{radius_km * 1000},{lat},{lng}"
+
                 overpass_query = f"""
                 [out:json];
                 (
@@ -281,27 +388,40 @@ if search_btn and location_query:
                     headers=nom_headers,
                     timeout=10,
                 )
+
                 data = resp.json()
+
                 elements = data.get("elements", [])
 
                 if elements:
                     results = []
+
                     for el in elements[:10]:
                         tags = el.get("tags", {})
+
                         el_lat = el.get("lat") or el.get("center", {}).get("lat")
+
                         el_lng = el.get("lon") or el.get("center", {}).get("lon")
+
                         results.append(
                             {
-                                "Name": tags.get("name", "Unknown"),
+                                "Name": tags.get(
+                                    "name",
+                                    "Unknown",
+                                ),
                                 "Address": tags.get(
                                     "addr:full",
                                     tags.get(
-                                        "addr:street", "Location details unavailable"
+                                        "addr:street",
+                                        "Location details unavailable",
                                     ),
                                 ),
                                 "Latitude": el_lat,
                                 "Longitude": el_lng,
-                                "Amenity": tags.get("amenity", "Unknown"),
+                                "Amenity": tags.get(
+                                    "amenity",
+                                    "Unknown",
+                                ),
                             }
                         )
 
@@ -310,73 +430,21 @@ if search_btn and location_query:
                     st.session_state.resource_map_search_lat = lat
                     st.session_state.resource_map_search_lng = lng
 
-                    st.success(f"Found {len(results)} results near {location_query}")
-
-                    # Emoji Mapping
-                    emoji_map = {"hospital": "🏥", "fire_station": "🚒", "police": "👮"}
-
-                    # Results Grid with Card Style
-                    cols = st.columns(2)
-                    for i, r in enumerate(results):
-                        col_idx = i % 2
-                        with cols[col_idx]:
-                            emoji = emoji_map.get(r["Amenity"], "📍")
-                            nav_link = (
-                                f"https://www.google.com/maps/dir/?api=1&destination="
-                                f"{r['Latitude']},{r['Longitude']}"
-                            )
-                            st.markdown(
-                                f"""
-                                <div class="resource-card">
-                                    <div class="resource-name">{emoji} {r["Name"]}</div>
-                                    <div class="resource-info">
-                                        <span class="material-symbols-rounded" \
-style="font-size: 18px; color: #FF4B4B;">location_on</span>
-                                        <b>Address:</b> {r["Address"]}
-                                    </div>
-                                    <div class="resource-info">
-                                        <span class="material-symbols-rounded" \
-style="font-size: 18px; color: #FF4B4B;">directions_run</span>
-                                        <b>Distance:</b> Live Tracking Active
-                                    </div>
-                                    <a href="{nav_link}" target="_blank" \
-class="nav-btn">
-                                        <span style="display: flex; \
-align-items: center; gap: 8px;">
-                                            <span class="material-symbols-rounded" \
-style="font-size: 18px;">directions</span>
-                                            Navigate Now
-                                        </span>
-                                    </a>
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
-
-                    # folium and st_folium are imported at module level
-
-                    m = folium.Map(
-                        location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter"
+                    render_resource_map_results(
+                        results,
+                        location_query,
+                        lat,
+                        lng,
                     )
-                    folium.Marker(
-                        [lat, lng],
-                        popup="Search Location",
-                        icon=folium.Icon(color="red", icon="search"),
-                    ).add_to(m)
-                    for r in results:
-                        if r["Latitude"] and r["Longitude"]:
-                            folium.Marker(
-                                [r["Latitude"], r["Longitude"]],
-                                popup=f"{r['Name']} ({r['Amenity']})",
-                                icon=folium.Icon(color="blue", icon="info-sign"),
-                            ).add_to(m)
-                    st_folium(m, height=400, use_container_width=True)
+
                 else:
                     st.warning(
                         "No results found. Try a different location or increase radius."
                     )
+
             else:
                 st.error("Location not found. Please try again.")
+
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
