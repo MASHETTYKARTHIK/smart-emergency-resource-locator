@@ -57,7 +57,9 @@ def test_get_nearest_resource_fallback(service, mock_client):
 
     assert result["name"] is not None  # nosec
     assert result["distance_km"] >= 0  # nosec
-    assert result["eta_min"] is None  # OSRM also skipped or failed during fallback  # nosec
+    assert (
+        result["eta_min"] is None
+    )  # OSRM also skipped or failed during fallback  # nosec
     assert result["route"] is None  # nosec
 
 
