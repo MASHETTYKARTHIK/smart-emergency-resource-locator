@@ -100,15 +100,17 @@ st.info(
     "In case of emergency, call 100 immediately to reach the nearest police station."
 )
 
-import requests
-import folium
-from streamlit_folium import st_folium
+import folium  # noqa: E402
+import requests  # noqa: E402
+from streamlit_folium import st_folium  # noqa: E402
 
 st.divider()
 st.markdown(
     """
-    <div style="border-left: 5px solid #FF4B4B; padding-left: 15px; margin: 30px 0 20px 0;">
-        <h3 style="color: #F8FAFC; margin: 0;">🔍 Search Live Location on Google Maps</h3>
+    <div style="border-left: 5px solid #FF4B4B; padding-left: 15px; \
+margin: 30px 0 20px 0;">
+        <h3 style="color: #F8FAFC; margin: 0;">🔍 Search Live Location \
+on Google Maps</h3>
     </div>
     """,
     unsafe_allow_html=True,
@@ -136,7 +138,7 @@ with col_b:
 if search_btn and location_query:
     with st.spinner("Fetching live data..."):
         try:
-            import requests
+            import requests  # noqa: E402
             
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
@@ -178,8 +180,12 @@ if search_btn and location_query:
                         el_lng = el.get("lon") or el.get("center", {}).get("lon")
                         results.append({
                             "Name": tags.get("name", "Unknown"),
-                            "Address": tags.get("addr:full", 
-                                       tags.get("addr:street", "Location details unavailable")),
+                            "Address": tags.get(
+                                "addr:full",
+                                tags.get(
+                                    "addr:street", "Location details unavailable"
+                                ),
+                            ),
                             "Latitude": el_lat,
                             "Longitude": el_lng
                         })
@@ -196,28 +202,39 @@ if search_btn and location_query:
                                 <div class="resource-card">
                                     <div class="resource-name">👮 {r['Name']}</div>
                                     <div class="resource-info">
-                                        <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">location_on</span>
+                                        <span class="material-symbols-rounded" \
+style="font-size: 18px; color: #FF4B4B;">location_on</span>
                                         <b>Address:</b> {r['Address']}
                                     </div>
                                     <div class="resource-info">
-                                        <span class="material-symbols-rounded" style="font-size: 18px; color: #FF4B4B;">directions_run</span>
+                                        <span class="material-symbols-rounded" \
+style="font-size: 18px; color: #FF4B4B;">directions_run</span>
                                         <b>Distance:</b> Live Tracking Active
                                     </div>
-                                    <a href="{nav_link}" target="_blank" class="nav-btn">
-                                        <span style="display: flex; align-items: center; gap: 8px;">
-                                            <span class="material-symbols-rounded" style="font-size: 18px;">directions</span>
+                                    <a href="{nav_link}" target="_blank" \
+class="nav-btn">
+                                        <span style="display: flex; \
+align-items: center; gap: 8px;">
+                                            <span class="material-symbols-rounded" \
+style="font-size: 18px;">directions</span>
                                             Navigate Now
                                         </span>
                                     </a>
                                 </div>
                                 """, unsafe_allow_html=True)
                     
-                    import folium
-                    from streamlit_folium import st_folium
-                    m = folium.Map(location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter")
-                    folium.Marker([lat, lng], 
-                                   popup="Search Location",
-                                   icon=folium.Icon(color="red", icon="search")).add_to(m)
+                    import folium  # noqa: E402
+                    from streamlit_folium import st_folium  # noqa: E402
+                    m = folium.Map(
+                        location=[lat, lng],
+                        zoom_start=13,
+                        tiles="CartoDB dark_matter"
+                    )
+                    folium.Marker(
+                        [lat, lng],
+                        popup="Search Location",
+                        icon=folium.Icon(color="red", icon="search")
+                    ).add_to(m)
                     for r in results:
                         if r['Latitude'] and r['Longitude']:
                             folium.Marker(
@@ -227,7 +244,9 @@ if search_btn and location_query:
                             ).add_to(m)
                     st_folium(m, height=400, use_container_width=True)
                 else:
-                    st.warning("No results found. Try a different location or increase radius.")
+                    st.warning(
+                        "No results found. Try a different location or increase radius."
+                    )
             else:
                 st.error("Location not found. Please try again.")
         except Exception as e:
