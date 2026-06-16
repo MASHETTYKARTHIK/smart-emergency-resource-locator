@@ -3,12 +3,13 @@ import sys
 
 import folium
 import pandas as pd
+import requests
 import streamlit as st
 from streamlit_folium import st_folium
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
-from components.sidebar import (
+from components.sidebar import (  # noqa: E402
     render_language_selector,
     render_page_styling,
     render_sidebar,
@@ -124,8 +125,6 @@ for _, row in df.iterrows():
 st_folium(m, width="100%", height=600)
 st.markdown("</div>", unsafe_allow_html=True)
 
-import requests  # noqa: E402
-
 st.divider()
 st.markdown(
     """
@@ -160,8 +159,6 @@ with col_b:
 if search_btn and location_query:
     with st.spinner("Fetching live data..."):
         try:
-            import requests  # noqa: E402
-
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
             nom_params: dict[str, str | int] = {
@@ -170,7 +167,9 @@ if search_btn and location_query:
                 "limit": 1,
             }
             nom_headers = {"User-Agent": "SmartEmergencyAllocator/1.0"}
-            nom_resp = requests.get(nom_url, params=nom_params, headers=nom_headers)
+            nom_resp = requests.get(
+                nom_url, params=nom_params, headers=nom_headers, timeout=10
+            )
             nom_data = nom_resp.json()
 
             if nom_data:
@@ -190,7 +189,10 @@ if search_btn and location_query:
                 """
 
                 resp = requests.post(
-                    overpass_url, data=overpass_query, headers=nom_headers
+                    overpass_url,
+                    data=overpass_query,
+                    headers=nom_headers,
+                    timeout=10,
                 )
                 data = resp.json()
                 elements = data.get("elements", [])
@@ -227,7 +229,10 @@ if search_btn and location_query:
                         col_idx = i % 2
                         with cols[col_idx]:
                             emoji = emoji_map.get(r["Amenity"], "📍")
-                            nav_link = f"https://www.google.com/maps/dir/?api=1&destination={r['Latitude']},{r['Longitude']}"
+                            nav_link = (
+                                f"https://www.google.com/maps/dir/?api=1&destination="
+                                f"{r['Latitude']},{r['Longitude']}"
+                            )
                             st.markdown(
                                 f"""
                                 <div class="resource-card">
@@ -256,8 +261,7 @@ style="font-size: 18px;">directions</span>
                                 unsafe_allow_html=True,
                             )
 
-                    import folium  # noqa: E402
-                    from streamlit_folium import st_folium  # noqa: E402
+                    # folium and st_folium are imported at module level
 
                     m = folium.Map(
                         location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter"

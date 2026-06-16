@@ -19,7 +19,7 @@ def service(mock_client):
 def test_haversine():
     # Gachibowli to HITEC City approx 3.5km
     dist = EmergencyService.haversine(17.4401, 78.3489, 17.4500, 78.3810)
-    assert 3.0 < dist < 4.0
+    assert 3.0 < dist < 4.0  # nosec
 
 
 def test_get_nearest_resource_success(service, mock_client):
@@ -41,10 +41,10 @@ def test_get_nearest_resource_success(service, mock_client):
 
     result = service.get_nearest_resource(17.440, 78.348, "hospital")
 
-    assert result["name"] == "Test Hospital"
-    assert result["distance_km"] > 0
-    assert result["eta_min"] == 5.0
-    assert result["route"] == "abc123polyline"
+    assert result["name"] == "Test Hospital"  # nosec
+    assert result["distance_km"] > 0  # nosec
+    assert result["eta_min"] == 5.0  # nosec
+    assert result["route"] == "abc123polyline"  # nosec
 
 
 def test_get_nearest_resource_fallback(service, mock_client):
@@ -55,10 +55,10 @@ def test_get_nearest_resource_fallback(service, mock_client):
     # Gachibowli coordinates
     result = service.get_nearest_resource(17.4401, 78.3489, "hospital")
 
-    assert result["name"] is not None
-    assert result["distance_km"] >= 0
-    assert result["eta_min"] is None  # OSRM also skipped or failed during fallback
-    assert result["route"] is None
+    assert result["name"] is not None  # nosec
+    assert result["distance_km"] >= 0  # nosec
+    assert result["eta_min"] is None  # OSRM also skipped or failed during fallback  # nosec
+    assert result["route"] is None  # nosec
 
 
 def test_invalid_resource_type(service):
