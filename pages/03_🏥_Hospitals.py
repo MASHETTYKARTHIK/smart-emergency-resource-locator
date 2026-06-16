@@ -59,6 +59,22 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    """
+    <style>
+    .resource-icon {
+        font-size: 18px;
+        color: #FF4B4B;
+    }
+
+    .nav-icon {
+        font-size: 18px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Grid Layout for Cards
 cols = st.columns(2)
 for i, (_index, row) in enumerate(df.iterrows()):
@@ -132,6 +148,75 @@ with col_a:
 with col_b:
     search_btn = st.button("🚀 Find Nearby on Map", use_container_width=True)
 
+if "hospital_search_results" not in st.session_state:
+    st.session_state.hospital_search_results = None
+
+if "hospital_search_location" not in st.session_state:
+    st.session_state.hospital_search_location = ""
+
+if "hospital_search_lat" not in st.session_state:
+    st.session_state.hospital_search_lat = None
+
+if "hospital_search_lng" not in st.session_state:
+    st.session_state.hospital_search_lng = None
+
+
+def render_search_results(results, location_query, lat, lng):
+    st.success(f"Found {len(results)} results near {location_query}")
+
+    cols = st.columns(2)
+    for i, r in enumerate(results):
+        col_idx = i % 2
+        with cols[col_idx]:
+            nav_link = (
+                f"https://www.google.com/maps/dir/?api=1&destination="
+                f"{r['Latitude']},{r['Longitude']}"
+            )
+            st.markdown(
+                f"""
+                <div class="resource-card">
+                    <div class="resource-name">🏥 {r["Name"]}</div>
+                    <div class="resource-info">
+                        <span class="material-symbols-rounded resource-icon">
+                            location_on
+                        </span>
+                        <b>Address:</b> {r["Address"]}
+                    </div>
+                    <div class="resource-info">
+                        <span class="material-symbols-rounded resource-icon">
+                            directions_run
+                        </span>
+                        <b>Distance:</b> Live Tracking Active
+                    </div>
+                    <a href="{nav_link}" target="_blank" class="nav-btn">
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-rounded nav-icon">
+                                directions
+                            </span>
+                            Navigate Now
+                        </span>
+                    </a>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    m = folium.Map(location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter")
+    folium.Marker(
+        [lat, lng],
+        popup="Search Location",
+        icon=folium.Icon(color="red", icon="search"),
+    ).add_to(m)
+    for r in results:
+        if r["Latitude"] and r["Longitude"]:
+            folium.Marker(
+                [r["Latitude"], r["Longitude"]],
+                popup=r["Name"],
+                icon=folium.Icon(color="blue", icon="info-sign"),
+            ).add_to(m)
+    st_folium(m, height=400, use_container_width=True)
+
+
 if search_btn and location_query:
     with st.spinner("Fetching live data..."):
         try:
@@ -190,6 +275,11 @@ if search_btn and location_query:
                                 "Longitude": el_lng,
                             }
                         )
+
+                    st.session_state.hospital_search_results = results
+                    st.session_state.hospital_search_location = location_query
+                    st.session_state.hospital_search_lat = lat
+                    st.session_state.hospital_search_lng = lng
 
                     st.success(f"Found {len(results)} results near {location_query}")
 
@@ -256,3 +346,15 @@ style="font-size: 18px;">directions</span>
                 st.error("Location not found. Please try again.")
         except Exception as e:
             st.error(f"Error: {str(e)}")
+
+if (
+    not search_btn
+    and st.session_state.hospital_search_results
+    and st.session_state.hospital_search_location
+):
+    render_search_results(
+        st.session_state.hospital_search_results,
+        st.session_state.hospital_search_location,
+        st.session_state.hospital_search_lat,
+        st.session_state.hospital_search_lng,
+    )
