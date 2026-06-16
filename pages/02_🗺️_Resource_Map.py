@@ -37,7 +37,7 @@ st.markdown(
                 justify-content: center;
                 border: 1px solid rgba(255, 75, 75, 0.2);
             ">
-                <span class="material-symbols-rounded" 
+                <span class="material-symbols-rounded"
                       style="color: #FF4B4B; font-size: 30px;">
                     map
                 </span>
@@ -164,7 +164,11 @@ if search_btn and location_query:
 
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
-            nom_params = {"q": location_query, "format": "json", "limit": 1}
+            nom_params: dict[str, str | int] = {
+                "q": location_query,
+                "format": "json",
+                "limit": 1,
+            }
             nom_headers = {"User-Agent": "SmartEmergencyAllocator/1.0"}
             nom_resp = requests.get(nom_url, params=nom_params, headers=nom_headers)
             nom_data = nom_resp.json()
