@@ -87,25 +87,25 @@ with col1:
     st.link_button(
         "🏥 Hospitals Near Me",
         "https://www.google.com/maps/search/hospitals+near+me",
-        use_container_width=True
+        use_container_width=True,
     )
 with col2:
     st.link_button(
         "💉 Blood Banks Near Me",
         "https://www.google.com/maps/search/blood+banks+near+me",
-        use_container_width=True
+        use_container_width=True,
     )
 with col3:
     st.link_button(
         "🚒 Fire Stations Near Me",
         "https://www.google.com/maps/search/fire+stations+near+me",
-        use_container_width=True
+        use_container_width=True,
     )
 with col4:
     st.link_button(
         "👮 Police Stations Near Me",
         "https://www.google.com/maps/search/police+stations+near+me",
-        use_container_width=True
+        use_container_width=True,
     )
 
 st.divider()
@@ -181,11 +181,7 @@ if search_btn:
             """,
             unsafe_allow_html=True,
         )
-        st.link_button(
-            "🧭 Navigate",
-            nav_link,
-            type="primary"
-        )
+        st.link_button("🧭 Navigate", nav_link, type="primary")
 
 # --- FOOTER ---
 st.markdown(
