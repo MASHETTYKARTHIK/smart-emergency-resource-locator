@@ -153,8 +153,8 @@ if search_btn and location_query:
                 overpass_query = f"""
                 [out:json];
                 (
-                  node["amenity"="fire_station"](around:{radius_km*1000},{lat},{lng});
-                  way["amenity"="fire_station"](around:{radius_km*1000},{lat},{lng});
+                  node["amenity"="fire_station"](around:{radius_km * 1000},{lat},{lng});
+                  way["amenity"="fire_station"](around:{radius_km * 1000},{lat},{lng});
                 );
                 out center;
                 """
@@ -196,11 +196,11 @@ if search_btn and location_query:
                             st.markdown(
                                 f"""
                                 <div class="resource-card">
-                                    <div class="resource-name">🚒 {r['Name']}</div>
+                                    <div class="resource-name">🚒 {r["Name"]}</div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" \
 style="font-size: 18px; color: #FF4B4B;">location_on</span>
-                                        <b>Address:</b> {r['Address']}
+                                        <b>Address:</b> {r["Address"]}
                                     </div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" \
