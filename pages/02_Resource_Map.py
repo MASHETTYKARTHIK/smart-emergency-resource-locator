@@ -1,16 +1,15 @@
 import os
 import sys
 
-import folium
-import pandas as pd
-import streamlit as st
-from streamlit_folium import st_folium
-
 # Add src to path for imports
 SRC_PATH = os.path.join(os.path.dirname(__file__), "..", "src")
-
 if SRC_PATH not in sys.path:
     sys.path.insert(0, SRC_PATH)
+
+import folium  # noqa: E402
+import pandas as pd  # noqa: E402
+import streamlit as st  # noqa: E402
+from streamlit_folium import st_folium  # noqa: E402
 
 from components.sidebar import (  # noqa: E402
     render_language_selector,
@@ -51,7 +50,8 @@ st.markdown(
                     Spatial Intelligence
                 </div>
                 <div style="color: #94A3B8; font-size: 0.9rem;">
-                    Interactive visualization of emergency assets across Hyderabad.
+                    Interactive visualization of emergency assets across
+                    Hyderabad.
                 </div>
             </div>
         </div>
@@ -110,15 +110,18 @@ st.markdown(
 m = folium.Map(
     location=[17.44, 78.38],
     zoom_start=11,
-    tiles="cartodbpositron"
-    if st.session_state.get("theme") == "light"
-    else "CartoDB dark_matter",
+    tiles=(
+        "cartodbpositron"
+        if st.session_state.get("theme") == "light"
+        else "CartoDB dark_matter"
+    ),
 )
 
 for _, row in df.iterrows():
+    popup_text = f"<b>{row['Name']}</b><br>{row['Contact']}<br>{row['Area']}"
     folium.Marker(
         [row["Latitude"], row["Longitude"]],
-        popup=f"<b>{row['Name']}</b><br>{row['Contact']}<br>{row['Area']}",
+        popup=popup_text,
         tooltip=row["Name"],
         icon=folium.Icon(color=color, icon="info-sign"),
     ).add_to(m)

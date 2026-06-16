@@ -1,14 +1,13 @@
 import os
 import sys
 
-import pandas as pd
-import streamlit as st
-
 # Add src to path for imports
 SRC_PATH = os.path.join(os.path.dirname(__file__), "..", "src")
-
 if SRC_PATH not in sys.path:
     sys.path.insert(0, SRC_PATH)
+
+import pandas as pd  # noqa: E402
+import streamlit as st  # noqa: E402
 
 from components.sidebar import (  # noqa: E402
     render_language_selector,
@@ -88,7 +87,11 @@ for i, (_index, row) in enumerate(df.iterrows()):
                     <b>Contact:</b> {row["Contact"]}
                 </div>
                 <a href="{nav_link}" target="_blank" class="nav-btn">
-                    <span style="display: flex; align-items: center; gap: 8px;">
+                    <span style="
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
                         <span class="material-symbols-rounded" style="
                             font-size: 18px;
                         ">directions</span>
