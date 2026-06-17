@@ -109,7 +109,19 @@ test-coverage:
     expire_in: 1 hour
 
 # --- CHANGELOG STAGE ---
-# --- CHANGELOG STAGE ---
 changelog:
+  stage: changelog
+  image:
+    name: orhunp/git-cliff:latest
+    entrypoint: [""]
+  before_script:
+
+  script:
+    - git fetch --unshallow
+    - git-cliff --output CHANGELOG.md
+  artifacts:
+    paths:
+      - CHANGELOG.md
+    expire_in: 1 hour
   rules:
-    - when: never
+    - if: $CI_COMMIT_BRANCH == "main"
