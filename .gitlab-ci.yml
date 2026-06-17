@@ -115,7 +115,7 @@ changelog:
     name: orhunp/git-cliff:latest
     entrypoint: [""]
   before_script:
-    - apk add --no-cache git
+
   script:
     - git fetch --unshallow
     - git-cliff --output CHANGELOG.md
