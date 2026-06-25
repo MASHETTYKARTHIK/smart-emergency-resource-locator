@@ -14,15 +14,35 @@ from components.sidebar import (  # noqa: E402
     render_page_styling,
     render_sidebar,
 )
+from utils.translations import (  # noqa: E402
+    AREA_NAME_TRANSLATIONS,
+    RESOURCE_NAME_TRANSLATIONS,
+    TRANSLATIONS,
+)
 
-st.set_page_config(page_title="Hospitals", layout="wide")
+lang = st.session_state.get(
+    "language_selector",
+    st.session_state.get("language", "English"),
+)
+t = TRANSLATIONS.get(lang, TRANSLATIONS["English"])
+st.session_state["language"] = lang if lang in TRANSLATIONS else "English"
+resource_name_translations = RESOURCE_NAME_TRANSLATIONS.get(
+    lang,
+    RESOURCE_NAME_TRANSLATIONS["English"],
+)
+area_name_translations = AREA_NAME_TRANSLATIONS.get(
+    lang,
+    AREA_NAME_TRANSLATIONS["English"],
+)
+
+st.set_page_config(page_title=t["hospitals"], layout="wide")
 
 # Render Components
 render_sidebar()
 render_language_selector()
 render_page_styling()
 
-st.title("🏥 Hospitals")
+st.title(f"🏥 {t['hospitals']}")
 
 df = pd.read_csv("data/hospitals.csv")
 
@@ -36,10 +56,10 @@ st.markdown(
         ">
             <div>
                 <div style="color: #F8FAFC; font-size: 1.2rem; font-weight: 700;">
-                    Hospital Network
+                    {t["hospital_network"]}
                 </div>
                 <div style="color: #94A3B8; font-size: 0.9rem;">
-                    View all registered medical facilities in the system.
+                    {t["hospital_network_subtitle"]}
                 </div>
             </div>
             <div style="text-align: right;">
@@ -51,7 +71,7 @@ st.markdown(
                     font-size: 0.7rem;
                     font-weight: 700;
                     text-transform: uppercase;
-                ">Total Active</div>
+                ">{t["total_active"]}</div>
             </div>
         </div>
     </div>
@@ -80,6 +100,11 @@ cols = st.columns(2)
 for i, (_index, row) in enumerate(df.iterrows()):
     col_idx = i % 2
     with cols[col_idx]:
+        translated_name = resource_name_translations.get(
+            row["Name"],
+            row["Name"],
+        )
+        translated_area = area_name_translations.get(row["Area"], row["Area"])
         nav_link = (
             f"https://www.google.com/maps/dir/?api=1&destination="
             f"{row['Latitude']},{row['Longitude']}"
@@ -87,27 +112,27 @@ for i, (_index, row) in enumerate(df.iterrows()):
         st.markdown(
             f"""
             <div class="resource-card">
-                <div class="resource-name">🏥 {row["Name"]}</div>
+                <div class="resource-name">🏥 {translated_name}</div>
                 <div class="resource-info">
                     <span class="material-symbols-rounded" style="
                         font-size: 18px;
                         color: #FF4B4B;
                     ">location_on</span>
-                    <b>Area:</b> {row["Area"]}
+                    <b>{t["area_label"]}:</b> {translated_area}
                 </div>
                 <div class="resource-info">
                     <span class="material-symbols-rounded" style="
                         font-size: 18px;
                         color: #FF4B4B;
                     ">call</span>
-                    <b>Contact:</b> {row["Contact"]}
+                    <b>{t["contact"]}:</b> {row["Contact"]}
                 </div>
                 <a href="{nav_link}" target="_blank" class="nav-btn">
                     <span style="display: flex; align-items: center; gap: 8px;">
                         <span class="material-symbols-rounded" style="
                             font-size: 18px;
                         ">directions</span>
-                        Navigate Now
+                        {t["navigate_now"]}
                     </span>
                 </a>
             </div>
@@ -119,11 +144,10 @@ for i, (_index, row) in enumerate(df.iterrows()):
 
 st.divider()
 st.markdown(
-    """
+    f"""
     <div style="border-left: 5px solid #FF4B4B; padding-left: 15px; \
 margin: 30px 0 20px 0;">
-        <h3 style="color: #F8FAFC; margin: 0;">🔍 Search Live Location \
-on Google Maps</h3>
+        <h3 style="color: #F8FAFC; margin: 0;">🔍 {t["search_live_location"]}</h3>
     </div>
     """,
     unsafe_allow_html=True,
@@ -132,21 +156,21 @@ on Google Maps</h3>
 col1, col2 = st.columns([3, 1])
 with col1:
     location_query = st.text_input(
-        "Enter location:", placeholder="e.g. Hyderabad, Gachibowli"
+        t["enter_location"], placeholder=t["location_placeholder"]
     )
 with col2:
-    radius_km = st.slider("Radius (km)", 1, 20, 5)
+    radius_km = st.slider(t["radius"], 1, 20, 5)
 
 col_a, col_b = st.columns(2)
 with col_a:
     if location_query:
         st.link_button(
-            "🌐 Open in Google Maps",
+            f"🌐 {t['google_maps']}",
             f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}",
-            use_container_width=True,
+            width="stretch",
         )
 with col_b:
-    search_btn = st.button("🚀 Find Nearby on Map", use_container_width=True)
+    search_btn = st.button(f"🚀 {t['find_nearby']}", width="stretch")
 
 if "hospital_search_results" not in st.session_state:
     st.session_state.hospital_search_results = None
@@ -162,12 +186,18 @@ if "hospital_search_lng" not in st.session_state:
 
 
 def render_search_results(results, location_query, lat, lng):
-    st.success(f"Found {len(results)} results near {location_query}")
+    st.success(
+        t["found_results_near"].format(count=len(results), location=location_query)
+    )
 
     cols = st.columns(2)
     for i, r in enumerate(results):
         col_idx = i % 2
         with cols[col_idx]:
+            translated_result_name = resource_name_translations.get(
+                r["Name"],
+                r["Name"],
+            )
             nav_link = (
                 f"https://www.google.com/maps/dir/?api=1&destination="
                 f"{r['Latitude']},{r['Longitude']}"
@@ -175,25 +205,25 @@ def render_search_results(results, location_query, lat, lng):
             st.markdown(
                 f"""
                 <div class="resource-card">
-                    <div class="resource-name">🏥 {r["Name"]}</div>
+                    <div class="resource-name">🏥 {translated_result_name}</div>
                     <div class="resource-info">
                         <span class="material-symbols-rounded resource-icon">
                             location_on
                         </span>
-                        <b>Address:</b> {r["Address"]}
+                        <b>{t["address"]}:</b> {r["Address"]}
                     </div>
                     <div class="resource-info">
                         <span class="material-symbols-rounded resource-icon">
                             directions_run
                         </span>
-                        <b>Distance:</b> Live Tracking Active
+                        <b>{t["distance"]}:</b> {t["live_tracking_active"]}
                     </div>
                     <a href="{nav_link}" target="_blank" class="nav-btn">
                         <span style="display: flex; align-items: center; gap: 8px;">
                             <span class="material-symbols-rounded nav-icon">
                                 directions
                             </span>
-                            Navigate Now
+                            {t["navigate_now"]}
                         </span>
                     </a>
                 </div>
@@ -204,21 +234,21 @@ def render_search_results(results, location_query, lat, lng):
     m = folium.Map(location=[lat, lng], zoom_start=13, tiles="CartoDB dark_matter")
     folium.Marker(
         [lat, lng],
-        popup="Search Location",
+        popup=t["search_location"],
         icon=folium.Icon(color="red", icon="search"),
     ).add_to(m)
     for r in results:
         if r["Latitude"] and r["Longitude"]:
             folium.Marker(
                 [r["Latitude"], r["Longitude"]],
-                popup=r["Name"],
+                popup=resource_name_translations.get(r["Name"], r["Name"]),
                 icon=folium.Icon(color="blue", icon="info-sign"),
             ).add_to(m)
-    st_folium(m, height=400, use_container_width=True)
+    st_folium(m, height=400, width="stretch")
 
 
 if search_btn and location_query:
-    with st.spinner("Fetching live data..."):
+    with st.spinner(t["fetching_live_data"]):
         try:
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
@@ -264,11 +294,11 @@ if search_btn and location_query:
                         el_lng = el.get("lon") or el.get("center", {}).get("lon")
                         results.append(
                             {
-                                "Name": tags.get("name", "Unknown"),
+                                "Name": tags.get("name", t["unknown"]),
                                 "Address": tags.get(
                                     "addr:full",
                                     tags.get(
-                                        "addr:street", "Location details unavailable"
+                                        "addr:street", t["location_details_unavailable"]
                                     ),
                                 ),
                                 "Latitude": el_lat,
@@ -281,13 +311,22 @@ if search_btn and location_query:
                     st.session_state.hospital_search_lat = lat
                     st.session_state.hospital_search_lng = lng
 
-                    st.success(f"Found {len(results)} results near {location_query}")
+                    st.success(
+                        t["found_results_near"].format(
+                            count=len(results),
+                            location=location_query,
+                        )
+                    )
 
                     # Results Grid with Card Style
                     cols = st.columns(2)
                     for i, r in enumerate(results):
                         col_idx = i % 2
                         with cols[col_idx]:
+                            translated_result_name = resource_name_translations.get(
+                                r["Name"],
+                                r["Name"],
+                            )
                             nav_link = (
                                 f"https://www.google.com/maps/dir/?api=1&destination="
                                 f"{r['Latitude']},{r['Longitude']}"
@@ -295,16 +334,19 @@ if search_btn and location_query:
                             st.markdown(
                                 f"""
                                 <div class="resource-card">
-                                    <div class="resource-name">🏥 {r["Name"]}</div>
+                                    <div class="resource-name">
+                                        🏥 {translated_result_name}
+                                    </div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" \
 style="font-size: 18px; color: #FF4B4B;">location_on</span>
-                                        <b>Address:</b> {r["Address"]}
+                                        <b>{t["address"]}:</b> {r["Address"]}
                                     </div>
                                     <div class="resource-info">
                                         <span class="material-symbols-rounded" \
 style="font-size: 18px; color: #FF4B4B;">directions_run</span>
-                                        <b>Distance:</b> Live Tracking Active
+                                        <b>{t["distance"]}:</b>
+                                        {t["live_tracking_active"]}
                                     </div>
                                     <a href="{nav_link}" target="_blank" \
 class="nav-btn">
@@ -312,7 +354,7 @@ class="nav-btn">
 align-items: center; gap: 8px;">
                                             <span class="material-symbols-rounded" \
 style="font-size: 18px;">directions</span>
-                                            Navigate Now
+                                            {t["navigate_now"]}
                                         </span>
                                     </a>
                                 </div>
@@ -327,25 +369,25 @@ style="font-size: 18px;">directions</span>
                     )
                     folium.Marker(
                         [lat, lng],
-                        popup="Search Location",
+                        popup=t["search_location"],
                         icon=folium.Icon(color="red", icon="search"),
                     ).add_to(m)
                     for r in results:
                         if r["Latitude"] and r["Longitude"]:
                             folium.Marker(
                                 [r["Latitude"], r["Longitude"]],
-                                popup=r["Name"],
+                                popup=resource_name_translations.get(
+                                    r["Name"], r["Name"]
+                                ),
                                 icon=folium.Icon(color="blue", icon="info-sign"),
                             ).add_to(m)
-                    st_folium(m, height=400, use_container_width=True)
+                    st_folium(m, height=400, width="stretch")
                 else:
-                    st.warning(
-                        "No results found. Try a different location or increase radius."
-                    )
+                    st.warning(t["no_results"])
             else:
-                st.error("Location not found. Please try again.")
+                st.error(t["location_not_found"])
         except Exception as e:
-            st.error(f"Error: {str(e)}")
+            st.error(f"{t['error']}: {str(e)}")
 
 if (
     not search_btn

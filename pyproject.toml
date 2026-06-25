@@ -3,7 +3,7 @@ name = "smart-emergency-resource-locator"
 version = "1.0.0"
 description = "A CivicTech project to locate emergency resources in Hyderabad."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 
 authors = [
     { name = "Team MTSKV" }
@@ -12,7 +12,7 @@ authors = [
 license = { text = "AGPL-3.0" }
 
 classifiers = [
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: GNU Affero General Public License v3",
     "Operating System :: OS Independent",
 ]
@@ -31,6 +31,7 @@ dependencies = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+pythonpath = ["."]
 addopts = "--cov=. --cov-report=term-missing --cov-report=xml"
 
 [tool.coverage.run]
@@ -44,7 +45,7 @@ omit = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.format]
 indent-style = "space"
@@ -55,7 +56,7 @@ line-ending = "lf"
 select = ["E", "F", "B", "I"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true

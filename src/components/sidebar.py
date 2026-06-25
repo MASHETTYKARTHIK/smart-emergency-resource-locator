@@ -1,5 +1,7 @@
 import streamlit as st
 
+from utils.translations import TRANSLATIONS
+
 
 def render_sidebar():
     # Google Fonts URLs
@@ -121,9 +123,18 @@ def render_sidebar():
     )
 
     with st.sidebar:
+        lang = st.session_state.get(
+            "language_selector",
+            st.session_state.get("language", "English"),
+        )
+        if lang not in TRANSLATIONS:
+            lang = "English"
+        st.session_state["language"] = lang
+        t = TRANSLATIONS.get(lang, TRANSLATIONS["English"])
+
         # App Logo & Branding - Clean "RESOURCES"
         st.markdown(
-            """
+            f"""
         <div style="display: flex; align-items: center; gap: 12px;
                     margin-bottom: 30px; padding: 10px 10px;">
             <div style="background: linear-gradient(135deg, #FF4B4B 0%, #D32F2F 100%);
@@ -135,7 +146,7 @@ def render_sidebar():
             </div>
             <div>
                 <div style="font-size: 1.2rem; font-weight: 700; color: white;
-                            letter-spacing: 1px;">RESOURCES</div>
+                            letter-spacing: 1px;">{t["resources"]}</div>
             </div>
         </div>
         """,
@@ -144,7 +155,7 @@ def render_sidebar():
 
         # Mission Control Card
         st.markdown(
-            """
+            f"""
         <div class="mission-control-card">
             <div style="position: relative; z-index: 1;">
                 <div style="display: flex; align-items: center; gap: 10px;
@@ -156,15 +167,17 @@ def render_sidebar():
                               style="color: #FF4B4B; font-size: 16px;">radar</span>
                     </div>
                     <span style="font-weight: 600; color: #F8FAFC;
-                                 font-size: 0.9rem;">Mission Control</span>
+                                 font-size: 0.9rem;">{t["mission_control"]}</span>
                     <div style="margin-left: auto; width: 8px; height: 8px;
                                 background: #10B981; border-radius: 50%;
                                 box-shadow: 0 0 8px #10B981;"></div>
                 </div>
                 <p style="color: #94A3B8; font-size: 0.75rem;
                           line-height: 1.4; margin: 0;">
-                    Real-time monitoring active. System Status:
-                    <span style="color: #10B981; font-weight: 600;">Optimal</span>
+                    {t["mission_status"]}
+                    <span style="color: #10B981; font-weight: 600;">
+                        {t["optimal"]}
+                    </span>
                 </p>
             </div>
         </div>
@@ -174,27 +187,31 @@ def render_sidebar():
 
         # Navigation
         st.markdown(
-            '<div class="sidebar-section-label">General</div>', unsafe_allow_html=True
-        )
-        st.page_link("app.py", label="Home", icon="🏠")
-        st.page_link("pages/01_Dashboard.py", label="Dashboard", icon="📊")
-        st.page_link("pages/02_🗺️_Resource_Map.py", label="Resource Map", icon="🗺️")
-
-        st.markdown(
-            '<div class="sidebar-section-label">Resources</div>', unsafe_allow_html=True
-        )
-        st.page_link("pages/03_🏥_Hospitals.py", label="Hospitals", icon="🏥")
-        st.page_link("pages/04_Blood_Banks.py", label="Blood Banks", icon="🩸")
-        st.page_link("pages/05_🚒_Fire_Stations.py", label="Fire Stations", icon="🚒")
-        st.page_link(
-            "pages/06_👮_Police_Stations.py", label="Police Stations", icon="👮"
-        )
-
-        st.markdown(
-            '<div class="sidebar-section-label">AI Intelligence</div>',
+            f'<div class="sidebar-section-label">{t["general"]}</div>',
             unsafe_allow_html=True,
         )
-        st.page_link("pages/07_AI_Assistant.py", label="AI Assistant", icon="🤖")
+        st.page_link("app.py", label=t["home"], icon="🏠")
+        st.page_link("pages/01_Dashboard.py", label=t["dashboard"], icon="📊")
+        st.page_link("pages/02_🗺️_Resource_Map.py", label=t["resource_map"], icon="🗺️")
+
+        st.markdown(
+            f'<div class="sidebar-section-label">{t["resources"]}</div>',
+            unsafe_allow_html=True,
+        )
+        st.page_link("pages/03_🏥_Hospitals.py", label=t["hospitals"], icon="🏥")
+        st.page_link("pages/04_Blood_Banks.py", label=t["blood_banks"], icon="🩸")
+        st.page_link(
+            "pages/05_🚒_Fire_Stations.py", label=t["fire_stations"], icon="🚒"
+        )
+        st.page_link(
+            "pages/06_👮_Police_Stations.py", label=t["police_stations"], icon="👮"
+        )
+
+        st.markdown(
+            f'<div class="sidebar-section-label">{t["ai_intelligence"]}</div>',
+            unsafe_allow_html=True,
+        )
+        st.page_link("pages/07_AI_Assistant.py", label=t["ai_assistant"], icon="🤖")
 
 
 def render_page_styling():
@@ -360,6 +377,11 @@ def render_page_styling():
 
 
 def render_language_selector():
+    language_options = list(TRANSLATIONS.keys())
+    current_language = st.session_state.get("language", "English")
+    if current_language not in language_options:
+        current_language = "English"
+
     # Language selector at top right - Glassmorphism
     col1, col2, col3 = st.columns([7, 2, 1])
     with col2:
@@ -379,10 +401,11 @@ def render_language_selector():
             unsafe_allow_html=True,
         )
     with col3:
-        st.selectbox(
-            "Language",
-            ["English", "हिन्दी", "తెలుగు"],
+        selected_lang = st.selectbox(
+            TRANSLATIONS[current_language]["language"],
+            language_options,
             label_visibility="collapsed",
-            index=0,
+            index=language_options.index(current_language),
             key="language_selector",
         )
+        st.session_state["language"] = selected_lang
