@@ -1,5 +1,8 @@
 import os
 import sys
+import traceback
+from html import escape
+from typing import Any
 
 import folium
 import pandas as pd
@@ -15,59 +18,64 @@ from components.sidebar import (  # noqa: E402
     render_page_styling,
     render_sidebar,
 )
+from utils.translations import (  # noqa: E402
+    AREA_NAME_TRANSLATIONS,
+    RESOURCE_NAME_TRANSLATIONS,
+    TRANSLATIONS,
+)
 
-st.set_page_config(page_title="Resource Map", layout="wide")
+lang = st.session_state.get(
+    "language_selector",
+    st.session_state.get("language", "English"),
+)
+t = TRANSLATIONS.get(lang, TRANSLATIONS["English"])
+st.session_state["language"] = lang if lang in TRANSLATIONS else "English"
+resource_name_translations = RESOURCE_NAME_TRANSLATIONS.get(
+    lang,
+    RESOURCE_NAME_TRANSLATIONS["English"],
+)
+area_name_translations = AREA_NAME_TRANSLATIONS.get(
+    lang,
+    AREA_NAME_TRANSLATIONS["English"],
+)
+
+NOMINATIM_TIMEOUT_SECONDS = 10
+OVERPASS_TIMEOUT_SECONDS = 30
+OVERPASS_SERVER_TIMEOUT_SECONDS = 25
+
+
+def parse_json_response(response: requests.Response, service_name: str) -> Any:
+    """Return JSON only after confirming the upstream response is usable."""
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as exc:
+        raise RuntimeError(
+            f"{service_name} request failed with status {response.status_code}"
+        ) from exc
+
+    content_type = response.headers.get("content-type", "").lower()
+    if "json" not in content_type:
+        raise RuntimeError(f"{service_name} returned a non-JSON response")
+
+    try:
+        return response.json()
+    except ValueError as exc:
+        raise RuntimeError(f"{service_name} returned invalid JSON") from exc
+
+
+st.set_page_config(page_title=t["resource_map"], layout="wide")
 
 # Render Components
 render_sidebar()
 render_language_selector()
 render_page_styling()
 
-st.title("🗺️ Emergency Resource Map")
-
 st.markdown(
-    """
-    <div class="hero-section" style="padding: 25px; margin-bottom: 25px;">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div style="
-                background: rgba(255, 75, 75, 0.1);
-                width: 50px;
-                height: 50px;
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid rgba(255, 75, 75, 0.2);
-            ">
-                <span
-                    class="material-symbols-rounded"
-                    style="color: #FF4B4B; font-size: 30px;"
-                >
-                    map
-                </span>
-            </div>
-
-            <div>
-                <div
-                    style="
-                        color: #F8FAFC;
-                        font-size: 1.5rem;
-                        font-weight: 700;
-                    "
-                >
-                    Spatial Intelligence
-                </div>
-
-                <div
-                    style="
-                        color: #94A3B8;
-                        font-size: 0.9rem;
-                    "
-                >
-                    Interactive visualization of emergency assets
-                    across Hyderabad.
-                </div>
-            </div>
+    f"""
+    <div class="hero-section">
+        <div class="hero-title">🗺️ {t["emergency_resource_map"]}</div>
+        <div class="hero-subtitle">
+            {t["map_subtitle"]}
         </div>
     </div>
     """,
@@ -96,27 +104,33 @@ with st.container():
 
     with col1:
         st.markdown(
-            """
+            f"""
             <div style="
                 padding-top: 10px;
                 color: #94A3B8;
                 font-weight: 600;
                 font-size: 0.8rem;
             ">
-                FILTER VIEW
+                {t["filter_view"]}
             </div>
             """,
             unsafe_allow_html=True,
         )
 
         resource = st.selectbox(
-            "Select Asset Type",
+            t["select_asset_type"],
             [
                 "Hospitals",
                 "Blood Banks",
                 "Police Stations",
                 "Fire Stations",
             ],
+            format_func=lambda option: {
+                "Hospitals": t["hospitals"],
+                "Blood Banks": t["blood_banks"],
+                "Police Stations": t["police_stations"],
+                "Fire Stations": t["fire_stations"],
+            }[option],
             label_visibility="collapsed",
         )
 
@@ -136,16 +150,16 @@ else:
     df = pd.read_csv("data/firestations.csv")
     color = "orange"
 
-# Map Container
 st.markdown(
     """
-    <div style="
-        margin-top: 20px;
+    <style>
+    iframe[title="streamlit_folium.st_folium"] {
         border-radius: 24px;
-        overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.05);
         box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    ">
+        margin-top: 20px;
+    }
+    </style>
     """,
     unsafe_allow_html=True,
 )
@@ -161,21 +175,24 @@ m = folium.Map(
 )
 
 for _, row in df.iterrows():
+    translated_name = resource_name_translations.get(
+        row["Name"],
+        row["Name"],
+    )
+    translated_area = area_name_translations.get(row["Area"], row["Area"])
     folium.Marker(
         [row["Latitude"], row["Longitude"]],
-        popup=f"<b>{row['Name']}</b><br>{row['Contact']}<br>{row['Area']}",
-        tooltip=row["Name"],
+        popup=f"<b>{translated_name}</b><br>{row['Contact']}<br>{translated_area}",
+        tooltip=translated_name,
         icon=folium.Icon(color=color, icon="info-sign"),
     ).add_to(m)
 
-st_folium(m, width="100%", height=600)
-
-st.markdown("</div>", unsafe_allow_html=True)
+st_folium(m, width="stretch", height=600)
 
 st.divider()
 
 st.markdown(
-    """
+    f"""
     <div
         style="
             border-left: 5px solid #FF4B4B;
@@ -184,7 +201,7 @@ st.markdown(
         "
     >
         <h3 style="color: #F8FAFC; margin: 0;">
-            🔍 Search Live Location on Google Maps
+            🔍 {t["search_live_location"]}
         </h3>
     </div>
     """,
@@ -195,27 +212,27 @@ col1, col2 = st.columns([3, 1])
 
 with col1:
     location_query = st.text_input(
-        "Enter location:",
-        placeholder="e.g. Hyderabad, Gachibowli",
+        t["enter_location"],
+        placeholder=t["location_placeholder"],
     )
 
 with col2:
-    radius_km = st.slider("Radius (km)", 1, 20, 5)
+    radius_km = st.slider(t["radius"], 1, 20, 5)
 
 col_a, col_b = st.columns(2)
 
 with col_a:
     if location_query:
         st.link_button(
-            "🌐 Open in Google Maps",
+            f"🌐 {t['google_maps']}",
             (f"https://www.google.com/maps/search/{location_query.replace(' ', '+')}"),
-            use_container_width=True,
+            width="stretch",
         )
 
 with col_b:
     search_btn = st.button(
-        "🚀 Find Nearby on Map",
-        use_container_width=True,
+        f"🚀 {t['find_nearby']}",
+        width="stretch",
     )
 
 # Session state setup
@@ -233,12 +250,19 @@ if "resource_map_search_lng" not in st.session_state:
 
 
 def render_resource_map_results(results, location_name, lat, lng):
-    st.success(f"Found {len(results)} results near {location_name}")
+    st.success(
+        t["found_results_near"].format(count=len(results), location=location_name)
+    )
 
     emoji_map = {
         "hospital": "🏥",
         "fire_station": "🚒",
         "police": "👮",
+    }
+    amenity_labels = {
+        "hospital": t["hospital"],
+        "fire_station": t["fire_station"],
+        "police": t["police_station"],
     }
 
     cols = st.columns(2)
@@ -248,68 +272,46 @@ def render_resource_map_results(results, location_name, lat, lng):
 
         with cols[col_idx]:
             emoji = emoji_map.get(r["Amenity"], "📍")
+            translated_result_name = resource_name_translations.get(
+                r["Name"],
+                r["Name"],
+            )
+            safe_result_name = escape(str(translated_result_name))
+            safe_address = escape(str(r["Address"]))
 
             nav_link = (
                 "https://www.google.com/maps/dir/?api=1&destination="
                 f"{r['Latitude']},{r['Longitude']}"
             )
 
-            st.markdown(
-                f"""
+            result_card_html = f"""
                 <div class="resource-card">
-
-                    <div class="resource-name">
-                        {emoji} {r["Name"]}
-                    </div>
-
+                    <div class="resource-name">{emoji} {safe_result_name}</div>
                     <div class="resource-info">
-                        <span
-                            class="material-symbols-rounded resource-icon"
-                        >
+                        <span class="material-symbols-rounded resource-icon">
                             location_on
                         </span>
-
-                        <b>Address:</b> {r["Address"]}
+                        <b>{t["address"]}:</b> {safe_address}
                     </div>
-
                     <div class="resource-info">
-                        <span
-                            class="material-symbols-rounded resource-icon"
-                        >
+                        <span class="material-symbols-rounded resource-icon">
                             directions_run
                         </span>
-
-                        <b>Distance:</b> Live Tracking Active
+                        <b>{t["distance"]}:</b> {t["live_tracking_active"]}
                     </div>
-
-                    <a
-                        href="{nav_link}"
-                        target="_blank"
-                        class="nav-btn"
-                    >
-
-                        <span
-                            style="
-                                display:flex;
-                                align-items:center;
-                                gap:8px;
-                            "
-                        >
-
-                            <span
-                                class="material-symbols-rounded nav-icon"
-                            >
+                    <a href="{nav_link}" target="_blank" class="nav-btn">
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-rounded nav-icon">
                                 directions
                             </span>
-
-                            Navigate Now
-
+                            {t["navigate_now"]}
                         </span>
-
                     </a>
-
                 </div>
-                """,
+                """
+
+            st.markdown(
+                result_card_html,
                 unsafe_allow_html=True,
             )
 
@@ -321,7 +323,7 @@ def render_resource_map_results(results, location_name, lat, lng):
 
     folium.Marker(
         [lat, lng],
-        popup="Search Location",
+        popup=t["search_location"],
         icon=folium.Icon(color="red", icon="search"),
     ).add_to(live_map)
 
@@ -329,19 +331,25 @@ def render_resource_map_results(results, location_name, lat, lng):
         if r["Latitude"] and r["Longitude"]:
             folium.Marker(
                 [r["Latitude"], r["Longitude"]],
-                popup=f"{r['Name']} ({r['Amenity']})",
+                popup=f"{resource_name_translations.get(r['Name'], r['Name'])}"
+                f" ({amenity_labels.get(r['Amenity'], r['Amenity'])})",
                 icon=folium.Icon(color="blue", icon="info-sign"),
             ).add_to(live_map)
 
     st_folium(
         live_map,
         height=400,
-        use_container_width=True,
+        width="stretch",
     )
 
 
 if search_btn and location_query:
-    with st.spinner("Fetching live data..."):
+    st.session_state.resource_map_search_results = None
+    st.session_state.resource_map_search_location = ""
+    st.session_state.resource_map_search_lat = None
+    st.session_state.resource_map_search_lng = None
+
+    with st.spinner(t["fetching_live_data"]):
         try:
             # Get coordinates from Nominatim
             nom_url = "https://nominatim.openstreetmap.org/search"
@@ -358,10 +366,9 @@ if search_btn and location_query:
                 nom_url,
                 params=nom_params,
                 headers=nom_headers,
-                timeout=10,
+                timeout=NOMINATIM_TIMEOUT_SECONDS,
             )
-
-            nom_data = nom_resp.json()
+            nom_data = parse_json_response(nom_resp, "Nominatim")
 
             if nom_data:
                 lat = float(nom_data[0]["lat"])
@@ -374,7 +381,7 @@ if search_btn and location_query:
                 around = f"around:{radius_km * 1000},{lat},{lng}"
 
                 overpass_query = f"""
-                [out:json];
+                [out:json][timeout:{OVERPASS_SERVER_TIMEOUT_SECONDS}];
                 (
                   node["amenity"~"{amenities}"]({around});
                   way["amenity"~"{amenities}"]({around});
@@ -384,12 +391,11 @@ if search_btn and location_query:
 
                 resp = requests.post(
                     overpass_url,
-                    data=overpass_query,
+                    data={"data": overpass_query},
                     headers=nom_headers,
-                    timeout=10,
+                    timeout=OVERPASS_TIMEOUT_SECONDS,
                 )
-
-                data = resp.json()
+                data = parse_json_response(resp, "Overpass")
 
                 elements = data.get("elements", [])
 
@@ -407,20 +413,20 @@ if search_btn and location_query:
                             {
                                 "Name": tags.get(
                                     "name",
-                                    "Unknown",
+                                    t["unknown"],
                                 ),
                                 "Address": tags.get(
                                     "addr:full",
                                     tags.get(
                                         "addr:street",
-                                        "Location details unavailable",
+                                        t["location_details_unavailable"],
                                     ),
                                 ),
                                 "Latitude": el_lat,
                                 "Longitude": el_lng,
                                 "Amenity": tags.get(
                                     "amenity",
-                                    "Unknown",
+                                    t["unknown"],
                                 ),
                             }
                         )
@@ -438,15 +444,19 @@ if search_btn and location_query:
                     )
 
                 else:
-                    st.warning(
-                        "No results found. Try a different location or increase radius."
-                    )
+                    st.warning(t["no_results"])
 
             else:
-                st.error("Location not found. Please try again.")
+                st.error(t["location_not_found"])
 
+        except requests.Timeout:
+            st.error(
+                f"{t['error']}: Live data request timed out. "
+                "Please try again or reduce the radius."
+            )
         except Exception as e:
-            st.error(f"Error: {str(e)}")
+            print(f"[RESOURCE_MAP_DEBUG] Full traceback={traceback.format_exc()!r}")
+            st.error(f"{t['error']}: {str(e)}")
 
 if (
     not search_btn
